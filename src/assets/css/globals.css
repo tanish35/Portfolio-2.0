@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+  scroll-behavior: smooth;
+  cursor: url('../cursor/cursor-scroll.svg') 10 10, auto !important;
+}
+
+main {
+  height: 100vh !important;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+}
+
+
+button,
+a {
+  cursor: url('../cursor/cursor-visit.svg') 10 10, auto !important;
+}
+
+section {
+  padding-left: 10%;
+  padding-right: 10%;
+  height: 100vh;
+  overflow-y: hidden;
+  scroll-snap-align: start;
+
+  @media screen and (max-width: 768px) {
+    padding-left: 5%;
+    padding-right: 5%;
+  }
+}
+
+canvas {
+  cursor: url('../cursor/cursor-play.svg') 10 10, auto !important;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+div::-webkit-scrollbar {
+  display: none;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .custom-shadow-200 {
+    box-shadow: 0px 0px 0px 2px rgb(10, 10, 10),
+      0px 2px 5px 1px rgba(10, 10, 10, 0.5),
+      inset 2px 4px 3px 0px rgb(36, 36, 36),
+      inset -2px -3px 3px 0px rgb(25, 25, 25);
+  }
+
+  .custom-shadow-100 {
+    box-shadow: rgb(17, 17, 17) 0px -2px 1px 0px inset, rgb(31, 31, 31) 0px 1px 0px 0px inset;
+  }
+
+  .custom-shadow-50 {
+    box-shadow: 0px 0px 0px 4px rgb(30, 30, 30), 0px 0px 5px 10px rgba(13, 13, 13, 0.7);
+  }
+
+  .custom-shadow-b {
+    box-shadow: inset 0 -2px 1px #141414;
+  }
+
+  .custom-shadow-t {
+    box-shadow: inset 0 1px #000;
+  }
+}
+
+@font-face {
+  font-family: 'gotham-bold';
+  src: url('../fonts/gotham-bold.woff2') format('woff2');
+}
+
+.font-gotham-bold {
+  font-family: 'gotham-bold';
+}
+
+@font-face {
+  font-family: 'gotham-book';
+  src: url('../fonts/gotham-book.woff2') format('woff2');
+}
+
+.font-gotham-book {
+  font-family: 'gotham-book';
+}
+
+.journey-line {
+  background: linear-gradient(180deg, rgba(56, 56, 56, 0) 0%, var(--token-80c5ec82-af54-417d-8dd2-fad7df68764b, rgb(56, 56, 56)) 36.03603603603604%, rgba(56, 56, 56, 1) 81.08108108108108%, rgba(56, 56, 56, 0) 100.9009009009009%);
+  width: 2px;
+}

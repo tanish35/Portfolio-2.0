@@ -1,0 +1,68 @@
+.model {
+  --aspectRatio: 12 / 10;
+  max-height: 700px;
+  display: grid;
+  aspect-ratio: var(--aspectRatio);
+  position: relative;
+  min-width: 180%;
+  top: -10%;
+
+  @media (max-width: 1023px) {
+    min-width: 160%;
+  }
+}
+
+.loader {
+  opacity: 0;
+  transition: opacity 400ms ease 1000ms;
+
+  &[data-visible='true'] {
+    opacity: 1;
+  }
+}
+
+.svg {
+  opacity: 0;
+  transition: opacity 1200ms ease 1400ms;
+  fill: rgb(230, 228, 198);
+  position: absolute;
+  transform: translateY(50%);
+
+  &[data-visible='true'] {
+    opacity: 1;
+  }
+
+  &[data-alternate='true'] {
+    width: 90%;
+    left: -10%;
+    bottom: 25%;
+
+    @media (max-width: 1023px) {
+      width: 70%;
+      left: 0;
+      bottom: 15%;
+    }
+
+    @media (max-width: 639px) {
+      width: 60%;
+      left: 0;
+    }
+  }
+
+  &[data-alternate='false'] {
+    width: 100%;
+    bottom: 25%;
+    right: -30%;
+
+    @media (max-width: 1023px) {
+      width: 80%;
+      right: 0%;
+      bottom: 18%;
+    }
+
+    @media (max-width: 639px) {
+      width: 60%;
+      right: 0;
+    }
+  }
+}

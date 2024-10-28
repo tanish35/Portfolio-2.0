@@ -1,0 +1,14 @@
+.canvas {
+  position: absolute;
+  width: 100vw;
+  height: 100vh !important;
+  inset: 0;
+  opacity: 0;
+  transition-property: opacity;
+  transition-duration: 3s;
+  transition-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
+
+  &[data-visible="true"] {
+    opacity: 1;
+  }
+}
