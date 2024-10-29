@@ -5,23 +5,21 @@ import { delay } from "@/utils/delay";
 import { classes } from "@/utils/style";
 import styles from "./decoder-text.module.css";
 
-// prettier-ignore
+// Specific Hindi characters for "Tanish Majumdar" (तनिष माजुमदार)
 const glyphs = [
-  'ア', 'イ', 'ウ', 'エ', 'オ',
-  'カ', 'キ', 'ク', 'ケ', 'コ',
-  'サ', 'シ', 'ス', 'セ', 'ソ',
-  'タ', 'チ', 'ツ', 'テ', 'ト',
-  'ナ', 'ニ', 'ヌ', 'ネ', 'ノ',
-  'ハ', 'ヒ', 'フ', 'ヘ', 'ホ',
-  'マ', 'ミ', 'ム', 'メ', 'モ',
-  'ヤ', 'ユ', 'ヨ', 'ー',
-  'ラ', 'リ', 'ル', 'レ', 'ロ',
-  'ワ', 'ヰ', 'ヱ', 'ヲ', 'ン',
-  'ガ', 'ギ', 'グ', 'ゲ', 'ゴ',
-  'ザ', 'ジ', 'ズ', 'ゼ', 'ゾ',
-  'ダ', 'ヂ', 'ヅ', 'デ', 'ド',
-  'バ', 'ビ', 'ブ', 'ベ', 'ボ',
-  'パ', 'ピ', 'プ', 'ペ', 'ポ',
+  "त",
+  "न",
+  "ि",
+  "ष",
+  " ",
+  "म",
+  "ा",
+  "ज",
+  "ु",
+  "म",
+  "द",
+  "ा",
+  "र",
 ];
 
 const CharType = {
@@ -35,12 +33,8 @@ function shuffle(content, output, position) {
       return { type: CharType.Value, value };
     }
 
-    if (position % 1 < 0.5) {
-      const rand = Math.floor(Math.random() * glyphs.length);
-      return { type: CharType.Glyph, value: glyphs[rand] };
-    }
-
-    return { type: CharType.Glyph, value: output[index].value };
+    const currentIndex = index % glyphs.length;
+    return { type: CharType.Glyph, value: glyphs[currentIndex] };
   });
 }
 
