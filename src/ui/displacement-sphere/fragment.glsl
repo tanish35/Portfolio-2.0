@@ -5,6 +5,7 @@ uniform vec3 emissive;
 uniform vec3 specular;
 uniform float shininess;
 uniform float opacity;
+uniform vec3 sphereColor;
 
 uniform float time;
 varying vec2 vUv;
@@ -40,9 +41,8 @@ varying float noise;
 void main() {
 
 	#include <clipping_planes_fragment>
-
-  vec3 finalColors = vec3(0.0, 0.75, 1);
-  vec4 diffuseColor = vec4(cos(finalColors * noise * 3.0), 1.0);
+	float noiseIntensity = 0.5;
+   vec4 diffuseColor = vec4(sphereColor * (1.0 - noiseIntensity) + cos(sphereColor * noise * 3.0) * noiseIntensity, 1.0);
   ReflectedLight reflectedLight = ReflectedLight(vec3(0.0), vec3(0.0), vec3(0.0), vec3(0.0));
   vec3 totalEmissiveRadiance = emissive;
 

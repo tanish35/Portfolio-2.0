@@ -21,6 +21,7 @@ import { cleanRenderer, cleanScene, removeLights } from "@/utils/three";
 import fragmentShader from "./fragment.glsl?raw";
 import vertexShader from "./vertex.glsl?raw";
 import styles from "./index.module.css";
+import { Color } from "three";
 
 const springConfig = {
   stiffness: 30,
@@ -74,7 +75,11 @@ export const DisplacementSphere = (props) => {
     material.current.onBeforeCompile = (shader) => {
       uniforms.current = UniformsUtils.merge([
         shader.uniforms,
-        { time: { type: "f", value: 0 } },
+        {
+          time: { type: "f", value: 0 },
+          sphereColor: { type: "c", value: new Color(1.0, 0.0, 0.0) },
+          noiseIntensity: { type: "f", value: 0.5 },
+        },
       ]);
 
       shader.uniforms = uniforms.current;
@@ -146,12 +151,22 @@ export const DisplacementSphere = (props) => {
 
       rotationX.set(position.y / 2);
       rotationY.set(position.x / 2);
+
+      const hue = position.x; // Value between 0 and 1
+      const saturation = position.y; // Value between 0 and 1
+
+      // Update the sphere color based on mouse movement
+      if (uniforms.current !== undefined) {
+        uniforms.current.sphereColor.value.setHSL(hue, saturation, 0.5);
+      }
     }, 100);
 
+    // Add mousemove event listener if not in reduced motion and in viewport
     if (!reduceMotion && isInViewport) {
       window.addEventListener("mousemove", onMouseMove);
     }
 
+    // Cleanup function to remove the event listener
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
     };
