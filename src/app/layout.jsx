@@ -64,6 +64,24 @@ export const metadata = {
       },
     ],
   },
+  openGraph: {
+    title: "Tanish's Portfolio",
+    description: "Portfolio of software projects by Tanish Majumdar",
+    url: "https://portfolio.devpixel.site",
+    site_name: "Tanish's Portfolio",
+    images: [
+      {
+        url: "/images/port.png",
+        alt: "Tanish's Portfolio Image",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tanish's Portfolio",
+    description: "Portfolio of software projects by Tanish Majumdar",
+    image: "/images/port.png",
+  },
 };
 
 export default function RootLayout({ children }) {
