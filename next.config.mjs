@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["aceternity.com", "images.unsplash.com"],
+    domains: ["aceternity.com", "images.unsplash.com", "api.microlink.io"],
   },
   reactStrictMode: true,
   webpack: (config, options) => {

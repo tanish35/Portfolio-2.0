@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import { Highlight } from "@/ui/aceternity/hero-highlight";
 import { PlaceholdersAndVanishInput } from "@/ui/aceternity/placeholders-and-vanish-input";
 import Image from "next/image";
+import { LinkPreview } from "@/ui/aceternity/link-preview";
 
 const Intro = forwardRef(({ scrollIndicatorHidden }, ref) => {
   const [email, setEmail] = useState("");
@@ -66,30 +67,30 @@ const Intro = forwardRef(({ scrollIndicatorHidden }, ref) => {
                 <DecoderText text="Delhi" delay={500} />
               </div>
               <div className="font-sans text-base flex gap-x-2 items-center text-teritiary-400">
-                <a
-                  href="https://www.linkedin.com/in/tanish34/"
-                  target="_blank"
-                  aria-label="LinkedIn"
-                  rel="noreferrer"
+                <LinkPreview
+                  url="https://www.linkedin.com/in/tanish34/"
+                  className="font-bold"
+                  isStatic={true}
+                  imageSrc="/images/linkedin.png"
                 >
                   <IconBrandLinkedin className="size-4 hover:text-teritiary-700 cursor-pointer" />
-                </a>
-                <a
-                  href="https://github.com/tanish35"
-                  target="_blank"
-                  aria-label="GitHub"
-                  rel="noreferrer"
+                </LinkPreview>
+                <LinkPreview
+                  url="https://github.com/tanish35"
+                  className="font-bold"
+                  isStatic={true}
+                  imageSrc="/images/git.png"
                 >
                   <IconBrandGithub className="size-4 hover:text-teritiary-700 cursor-pointer" />
-                </a>
-                <a
-                  href="https://www.instagram.com/tanishm._.29/"
-                  target="_blank"
-                  aria-label="GitHub"
-                  rel="noreferrer"
+                </LinkPreview>
+                <LinkPreview
+                  url="https://www.instagram.com/tanishm._.29/"
+                  className="font-bold"
+                  isStatic={true}
+                  imageSrc="/images/insta.png"
                 >
                   <IconBrandInstagram className="size-4 hover:text-teritiary-700 cursor-pointer" />
-                </a>
+                </LinkPreview>
               </div>
               <div className="!mt-4 flex max-w-sm">
                 {/* <PlaceholdersAndVanishInput
