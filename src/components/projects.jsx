@@ -6,6 +6,43 @@ import ProjectSummary from "@/ui/project-summary/index";
 const projects = [
   {
     tags: [
+      "Postgres",
+      "Express.js",
+      "React.js",
+      "Forge",
+      "Solidity",
+      "OpenZeppelin",
+      "Chainlink Automation",
+      "Ethers.js",
+      "Wagmi",
+      "Chakra UI",
+      "ShadCN",
+      "Smart Contracts",
+      "GenAI",
+      "WebSockets",
+    ],
+
+    alternate: true,
+    title: "EcoX",
+    caption: "Carbon Credit Marketplace",
+    description:
+      "A blockchain-powered platform for seamless carbon credit trading. Features include automated certificate verification, buying, selling, and auctioning of carbon credits to promote transparency and sustainability in the carbon economy.",
+
+    buttonText: "View project",
+    buttonLink: "https://ecox.wedevelopers.online",
+    model: {
+      type: "laptop",
+      alt: "EcoX",
+      textures: [
+        {
+          srcSet: "/images/ecox.png 1280w",
+          placeholder: "/images/placeholder.jpg",
+        },
+      ],
+    },
+  },
+  {
+    tags: [
       "React.js",
       "Firebase",
       "Express",

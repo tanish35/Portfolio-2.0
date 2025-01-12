@@ -5,11 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const experienceData = [
   {
-    title: "",
-    company: "",
-    companyUrl: "",
-    duration: "",
-    description: "",
+    title: "SDE Intern",
+    company: "Polycab India Pvt. Ltd.",
+    companyUrl: "polycab.com",
+    duration: "December 2024-Present",
+    description:
+      "Developed an internal employee management tool with automated features for project and leave tracking, a 4-week rolling plan, and capacity planning. Enabled distinct Admin and HR access, integrated performance leaderboards, and built analytical graphs for data-driven decision-making",
   },
 ];
 
