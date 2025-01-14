@@ -64,7 +64,7 @@ const Intro = forwardRef(({ scrollIndicatorHidden }, ref) => {
               <DecoderText text="Tanish Majumdar" delay={500} />
               <div className="font-sans text-base flex gap-x-1 items-center">
                 <IconMapPin className="size-4" />
-                <DecoderText text="Delhi" delay={500} />
+                <DecoderText text="Mumbai" delay={500} />
               </div>
               <div className="font-sans text-base flex gap-x-2 items-center text-teritiary-400">
                 <LinkPreview

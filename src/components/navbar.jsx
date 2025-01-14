@@ -23,6 +23,11 @@ export default function FloatingNavBar() {
         <IconComponents className="h-4 w-4 text-neutral-500 dark:text-white" />
       ),
     },
+    {
+      name: "Experience",
+      link: "#experience",
+      icon: <IconTie className="h-4 w-4 text-neutral-500 dark:text-white" />,
+    },
   ];
   return <FloatingNav navItems={navItems} />;
 }
