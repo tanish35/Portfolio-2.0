@@ -3,7 +3,7 @@ import "@/assets/css/globals.css";
 import Script from "next/script";
 import { Toaster } from "react-hot-toast";
 import NavBar from "@/components/navbar";
-import { SpeedInsights } from "@vercel/speed-insights";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({ subsets: ["latin"] });
