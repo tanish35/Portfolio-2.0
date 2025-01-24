@@ -2,9 +2,20 @@ import { Inter } from "next/font/google";
 import "@/assets/css/globals.css";
 import Script from "next/script";
 import { Toaster } from "react-hot-toast";
-import NavBar from "@/components/navbar";
+import dynamic from "next/dynamic";
+import { ThemeProvider } from "next-themes";
 
 const inter = Inter({ subsets: ["latin"] });
+const NavBar = dynamic(() => import("@/components/navbar"), { ssr: false });
+const SpeedInsights = dynamic(() => import("@/components/SpeedInsights"), {
+  ssr: false,
+});
+
+const clarityId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID;
+const gaId = process.env.NEXT_PUBLIC_GA4;
+
+if (!clarityId) console.error("Clarity Project ID is missing");
+if (!gaId) console.error("Google Analytics ID is missing");
 
 export const metadata = {
   metadataBase: new URL("https://portfolio.devpixel.site"),
@@ -68,19 +79,6 @@ export const metadata = {
     title: "Tanish's Portfolio",
     description: "Portfolio of software projects by Tanish Majumdar",
     url: "https://portfolio.devpixel.site",
-    site_name: "Tanish's Portfolio",
-    images: [
-      {
-        url: "/images/port.png",
-        alt: "Tanish's Portfolio Image",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Tanish's Portfolio",
-    description: "Portfolio of software projects by Tanish Majumdar",
-    image: "/images/port.png",
   },
 };
 
@@ -88,24 +86,27 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="dark">
       <Script id="clarity-script" strategy="afterInteractive">
-        {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "${process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID}");`}
+        {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "${clarityId}");`}
       </Script>
       <Script id="google-script" strategy="afterInteractive">
-        {`window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '${process.env.NEXT_PUBLIC_GA4}');`}
+        {`window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '${gaId}');`}
       </Script>
       <body className={inter.className}>
-        <NavBar />
-        {children}
-        <Toaster
-          toastOptions={{
-            position: "bottom-right",
-            style: {
-              borderRadius: "10px",
-              background: "#111",
-              color: "#fff",
-            },
-          }}
-        />
+        <ThemeProvider attribute="class">
+          <NavBar />
+          <SpeedInsights />
+          {children}
+          <Toaster
+            toastOptions={{
+              position: "bottom-right",
+              style: {
+                borderRadius: "10px",
+                background: "#111",
+                color: "#fff",
+              },
+            }}
+          />
+        </ThemeProvider>
       </body>
     </html>
   );
