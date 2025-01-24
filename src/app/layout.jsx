@@ -4,12 +4,9 @@ import Script from "next/script";
 import { Toaster } from "react-hot-toast";
 import dynamic from "next/dynamic";
 import { ThemeProvider } from "next-themes";
-
+import { SpeedInsights } from "@vercel/speed-insights/next";
 const inter = Inter({ subsets: ["latin"] });
 const NavBar = dynamic(() => import("@/components/navbar"), { ssr: false });
-const SpeedInsights = dynamic(() => import("@/components/SpeedInsights"), {
-  ssr: false,
-});
 
 const clarityId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID;
 const gaId = process.env.NEXT_PUBLIC_GA4;
@@ -107,6 +104,7 @@ export default function RootLayout({ children }) {
             }}
           />
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
