@@ -11,8 +11,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata = {
   metadataBase: new URL("https://portfolio.devpixel.site"),
   title: "Tanish's Portfolio",
-  description: "Portfolio of software projects by Tanish Majumdar",
-  applicationName: "Portfolio",
+  description:
+    "Showcasing software projects by Tanish Majumdar - Web Developer, Freelancer, and AI Expert.",
+  applicationName: "Tanish's Portfolio",
   authors: [
     {
       name: "Tanish Majumdar",
@@ -20,26 +21,27 @@ export const metadata = {
     },
   ],
   keywords: [
-    "portfolio",
-    "software",
-    "projects",
     "Tanish Majumdar",
-    "freelancer",
+    "portfolio",
     "web developer",
+    "freelancer",
     "AI expert",
+    "software projects",
+    "frontend developer",
+    "backend developer",
   ],
   robots: "index, follow",
   icons: {
     icon: [
       {
         rel: "icon",
-        type: "image/x-icon",
+        type: "image/png",
         sizes: "16x16",
         url: "/favicon/favicon-16x16.png",
       },
       {
         rel: "icon",
-        type: "image/x-icon",
+        type: "image/png",
         sizes: "32x32",
         url: "/favicon/favicon-32x32.png",
       },
@@ -51,7 +53,7 @@ export const metadata = {
         url: "/favicon/apple-touch-icon.png",
       },
     ],
-    androidIcon: [
+    android: [
       {
         rel: "icon",
         type: "image/png",
@@ -67,22 +69,29 @@ export const metadata = {
     ],
   },
   openGraph: {
+    type: "website",
     title: "Tanish's Portfolio",
-    description: "Portfolio of software projects by Tanish Majumdar",
+    description:
+      "Discover software projects by Tanish Majumdar. Explore his expertise in web development and AI.",
     url: "https://portfolio.devpixel.site",
-    site_name: "Tanish's Portfolio",
+    siteName: "Tanish's Portfolio",
+    locale: "en_US",
     images: [
       {
-        url: "/images/port.png",
-        alt: "Tanish's Portfolio Image",
+        url: "https://portfolio.devpixel.site/images/port.png",
+        width: 1200,
+        height: 630,
+        alt: "Tanish's Portfolio - A showcase of software projects",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
+    site: "@Jaytilakmajumd2",
     title: "Tanish's Portfolio",
-    description: "Portfolio of software projects by Tanish Majumdar",
-    image: "/images/port.png",
+    description:
+      "Explore software projects and expertise in web development by Tanish Majumdar.",
+    images: ["https://portfolio.devpixel.site/images/port.png"],
   },
 };
 
