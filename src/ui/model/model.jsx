@@ -92,9 +92,9 @@ export const Model = ({
     const { clientWidth, clientHeight } = container.current;
 
     renderer.current = new WebGLRenderer({
-      canvas: canvasRef.current,
-      antialias: false,
+      canvas: canvas.current,
       alpha: true,
+      antialias: false,
       powerPreference: "high-performance",
       failIfMajorPerformanceCaveat: false,
     });
