@@ -24,7 +24,7 @@ const ContactMe = forwardRef(({ visible }, ref) => {
             className="absolute animate-bounce top-3/4 left-2/3"
           />
         </div>
-        <div className="rounded-b-[24px] flex custom-shadow-100 w-full custom-shadow-t items-center gap-x-8 justify-evenly bg-secondary-100 border-1 border-secondary-300 sm:py-10 sm:px-16 px-2 py-4">
+        <div className="rounded-b-[24px] flex custom-shadow-100 w-full custom-shadow-t items-center gap-x-8 justify-evenly bg-secondary-100 border-1 border-secondary-300 sm:pt-10 sm:pb-5 sm:px-16 px-2 py-4">
           <a
             href="mailto:tanishmajumdar2912@gmail.com"
             className="border-1 border-secondary-300 custom-shadow-100 flex items-center justify-center bg-secondary-300 sm:py-6 py-2 sm:w-full px-4 gap-x-2  rounded-xl text-lg text-teritiary-600"
@@ -48,6 +48,42 @@ const ContactMe = forwardRef(({ visible }, ref) => {
             </svg>
             <span className="hidden sm:block">Email</span>
             <span className="sm:hidden">Email</span>
+          </a>
+        </div>
+        <div className="rounded-b-[24px] flex custom-shadow-100 w-full custom-shadow-t items-center gap-x-8 justify-evenly bg-secondary-100 border-1 border-secondary-300 sm:pt-0 sm:pb-10 sm:px-16 px-2 py-4">
+          <a
+            href="/files/resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="border-1 border-secondary-300 custom-shadow-100 flex items-center justify-center bg-secondary-300 sm:py-6 py-2 sm:w-full px-4 gap-x-2 rounded-xl text-lg text-teritiary-600"
+          >
+            <svg
+              width="30"
+              height="30"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M1 12C2.73 7.61 7.11 4.5 12 4.5C16.89 4.5 21.27 7.61 23 12C21.27 16.39 16.89 19.5 12 19.5C7.11 19.5 2.73 16.39 1 12Z"
+                stroke="#E94B30"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <circle
+                cx="12"
+                cy="12"
+                r="3"
+                stroke="#E94B30"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+
+            <span className="hidden sm:block">View Resume</span>
+            <span className="sm:hidden">Resume</span>
           </a>
         </div>
       </div>
