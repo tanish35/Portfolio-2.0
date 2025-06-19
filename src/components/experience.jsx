@@ -8,7 +8,7 @@ const experienceData = [
     title: "SDE Intern",
     company: "Polycab India Pvt. Ltd.",
     companyUrl: "polycab.com",
-    duration: "December 2024-Present",
+    duration: "December 2024-February 2025",
     description:
       "Developed an internal employee management tool with automated features for project and leave tracking, a 4-week rolling plan, and capacity planning. Enabled distinct Admin and HR access, integrated performance leaderboards, and built analytical graphs for data-driven decision-making",
   },
