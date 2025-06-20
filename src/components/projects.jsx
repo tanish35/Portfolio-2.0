@@ -6,6 +6,43 @@ import ProjectSummary from "@/ui/project-summary/index";
 const projects = [
   {
     tags: [
+      "Python",
+      "Backtrader",
+      "Pandas",
+      "NumPy",
+      "SciPy",
+      "YFinance",
+      "Momentum",
+      "FIP Score",
+      "Skewness",
+      "Volatility Targeting",
+      "Risk Parity",
+      "Backtesting",
+      "Dynamic Rebalancing",
+    ],
+
+    alternate: false,
+    title: "Quantra",
+    caption: "Multi-Factor Alpha Engine",
+    description:
+      "A momentum-driven quant strategy that blends market regime filters, multi-timeframe momentum, skewness screening, and FIP scoring to generate consistent alpha. Built with Backtrader and designed for dynamic rebalancing and risk-aware portfolio construction.",
+
+    buttonText: "View jupyter notebook",
+    buttonLink:
+      "https://colab.research.google.com/drive/1tsc2zJkNRTO5TaoEZ8mGSXw_fyLrMUWV?usp=sharing",
+    model: {
+      type: "laptop",
+      alt: "EcoX",
+      textures: [
+        {
+          srcSet: "/images/quant.png 1280w",
+          placeholder: "/images/placeholder.jpg",
+        },
+      ],
+    },
+  },
+  {
+    tags: [
       "Postgres",
       "Express.js",
       "React.js",

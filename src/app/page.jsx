@@ -15,6 +15,7 @@ export default function Home() {
   const project_2 = useRef(null);
   const project_3 = useRef(null);
   const project_4 = useRef(null);
+  const project_5 = useRef(null);
   const experience = useRef(null);
   const contactMe = useRef(null);
 
@@ -25,6 +26,7 @@ export default function Home() {
       project_2,
       project_3,
       project_4,
+      project_5,
       experience,
       contactMe,
     ];
@@ -70,12 +72,13 @@ export default function Home() {
       <Background />
       <Intro ref={intro} scrollIndicatorHidden={scrollIndicatorHidden} />
       <Projects
-        ref={[project_1, project_2, project_3, project_4]}
+        ref={[project_1, project_2, project_3, project_4, project_5]}
         visible={[
           visibleSections.includes(project_1.current),
           visibleSections.includes(project_2.current),
           visibleSections.includes(project_3.current),
           visibleSections.includes(project_4.current),
+          visibleSections.includes(project_5.current),
         ]}
       />
       <Experience
