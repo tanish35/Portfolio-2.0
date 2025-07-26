@@ -28,4 +28,4 @@ I am Tanish, a passionate software developer with a keen interest in building in
 
 ## 🌐 Visit My Portfolio
 
-Check out my portfolio at [portfolio.devpixel.site](https://portfolio.devpixel.site) and discover my work!
+Check out my portfolio at [portfolio.devpixel.site](https://tanishm.site) and discover my work!
