@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://portfolio.devpixel.site
+Host: https://tanishm.site
 
 # Sitemaps
-Sitemap: https://portfolio.devpixel.site/sitemap.xml
+Sitemap: https://tanishm.site/sitemap.xml

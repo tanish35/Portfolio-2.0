@@ -1,5 +1,5 @@
+/** next-sitemap.config.js */
 module.exports = {
-  siteUrl: "https://portfolio.devpixel.site", // Replace with your site URL
+  siteUrl: "https://tanishm.site",
   generateRobotsTxt: true,
-  sitemapSize: 5000,
 };
