@@ -9,7 +9,7 @@ import { Analytics } from "@vercel/analytics/next";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  metadataBase: new URL("https://portfolio.devpixel.site"),
+  metadataBase: new URL("https://tanishm.site"),
   title: "Tanish's Portfolio",
   description:
     "Showcasing software projects by Tanish Majumdar - Web Developer, Freelancer, and AI Expert.",
@@ -73,12 +73,12 @@ export const metadata = {
     title: "Tanish's Portfolio",
     description:
       "Discover software projects by Tanish Majumdar. Explore his expertise in web development and AI.",
-    url: "https://portfolio.devpixel.site",
+    url: "https://tanishm.site",
     siteName: "Tanish's Portfolio",
     locale: "en_US",
     images: [
       {
-        url: "https://portfolio.devpixel.site/images/port.png",
+        url: "https://tanishm.site/images/port.png",
         width: 1200,
         height: 630,
         alt: "Tanish's Portfolio - A showcase of software projects",
@@ -91,7 +91,7 @@ export const metadata = {
     title: "Tanish's Portfolio",
     description:
       "Explore software projects and expertise in web development by Tanish Majumdar.",
-    images: ["https://portfolio.devpixel.site/images/port.png"],
+    images: ["https://tanishm.site/images/port.png"],
   },
 };
 
