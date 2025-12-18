@@ -16,6 +16,7 @@ export default function Home() {
   const project_3 = useRef(null);
   const project_4 = useRef(null);
   const project_5 = useRef(null);
+  const project_6 = useRef(null);
   const experience = useRef(null);
   const contactMe = useRef(null);
 
@@ -27,6 +28,7 @@ export default function Home() {
       project_3,
       project_4,
       project_5,
+      project_6,
       experience,
       contactMe,
     ];
@@ -52,13 +54,11 @@ export default function Home() {
       { rootMargin: "-100% 0px 0px 0px" }
     );
     sections.forEach((section) => {
-      // if section is visible, add it to the visibleSections
       if (section.current) {
         sectionObserver.observe(section.current);
       }
     });
     if (intro.current) {
-      // if intro is visible, hide the scroll indicator
       indicatorObserver.observe(intro.current);
     }
     return () => {
@@ -72,13 +72,14 @@ export default function Home() {
       <Background />
       <Intro ref={intro} scrollIndicatorHidden={scrollIndicatorHidden} />
       <Projects
-        ref={[project_1, project_2, project_3, project_4, project_5]}
+        ref={[project_1, project_2, project_3, project_4, project_5, project_6]}
         visible={[
           visibleSections.includes(project_1.current),
           visibleSections.includes(project_2.current),
           visibleSections.includes(project_3.current),
           visibleSections.includes(project_4.current),
           visibleSections.includes(project_5.current),
+          visibleSections.includes(project_6.current),
         ]}
       />
       <Experience

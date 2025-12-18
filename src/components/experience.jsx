@@ -6,8 +6,18 @@ import { motion, AnimatePresence } from "framer-motion";
 const experienceData = [
   {
     title: "SDE Intern",
+    company: "Steora",
+    companyUrl: "steorasystems.com",
+    companyLogo: "/images/steora.svg",
+    duration: "September 2025-December 2025",
+    description:
+      "Built a scalable leave management system enabling automated leave planning and approvals. Designed a low-latency transcript search engine optimized to handle thousands of queries in sub-second response times. Developed an AI agent to automate user workflows including form submissions, intelligent query handling, and task orchestration.",
+  },
+  {
+    title: "SDE Intern",
     company: "Polycab India Pvt. Ltd.",
     companyUrl: "polycab.com",
+    companyLogo: "/images/polycab.jpg",
     duration: "December 2024-February 2025",
     description:
       "Developed an internal employee management tool with automated features for project and leave tracking, a 4-week rolling plan, and capacity planning. Enabled distinct Admin and HR access, integrated performance leaderboards, and built analytical graphs for data-driven decision-making",
@@ -118,8 +128,15 @@ const Experience = forwardRef(({ visible }, ref) => {
                     }}
                     className="bg-secondary-300 py-3 px-6 rounded-xl custom-shadow-200 col-span-2"
                   >
-                    <div className="text-lg font-semibold text-teritiary-600 max-sm:text-base">
-                      {exp.company}
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={exp.companyLogo}
+                        alt={`${exp.company} logo`}
+                        className="w-8 h-8 object-contain"
+                      />
+                      <div className="text-lg font-semibold text-teritiary-600 max-sm:text-base">
+                        {exp.company}
+                      </div>
                     </div>
                     <div className="text-sm text-teritiary-300 font-gotham-book max-sm:tex-txs max-sm:truncate">
                       {exp.companyUrl}

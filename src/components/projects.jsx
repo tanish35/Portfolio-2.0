@@ -6,6 +6,33 @@ import ProjectSummary from "@/ui/project-summary/index";
 const projects = [
   {
     tags: [
+      "Qdrant",
+      "Gemini AI",
+      "AI-SDK by Vercel",
+      "Unstructured",
+      "Prisma",
+      "Postgres",
+    ],
+    alternate: true,
+    title: "AskVault",
+    caption: "AI-Powered Data Management Platform",
+    description:
+      "A versatile platform for uploading data and performing intelligent searches, automating form submissions, and managing emailing workflows. Leverages Qdrant for vector search, Gemini AI for advanced intelligence, and integrates with Prisma and Postgres for robust data handling.",
+    buttonText: "View project",
+    buttonLink: "https://ask.wedevs.site",
+    model: {
+      type: "laptop",
+      alt: "AskVault",
+      textures: [
+        {
+          srcSet: "/images/askVault.png 1280w",
+          placeholder: "/images/placeholder.jpg",
+        },
+      ],
+    },
+  },
+  {
+    tags: [
       "Python",
       "Backtrader",
       "Pandas",
