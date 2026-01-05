@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 import NavBar from "@/components/navbar";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -123,6 +124,12 @@ export default function RootLayout({ children }) {
         <SpeedInsights />
         <Analytics />
       </body>
+      <Script
+        src="https://umami34.vercel.app/script.js"
+        data-website-id="5ed1fbcb-c766-4aee-9640-1db097636558"
+        strategy="afterInteractive"
+        defer
+      />
     </html>
   );
 }
