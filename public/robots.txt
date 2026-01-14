@@ -1,9 +1,0 @@
-# *
-User-agent: *
-Allow: /
-
-# Host
-Host: https://tanishm.site
-
-# Sitemaps
-Sitemap: https://tanishm.site/sitemap.xml

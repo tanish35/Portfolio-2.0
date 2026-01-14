@@ -7,13 +7,22 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 // import Script from "next/script";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+});
 
 export const metadata = {
   metadataBase: new URL("https://tanishm.site"),
-  title: "Tanish's Portfolio",
+  title: {
+    default: "Tanish Majumdar | Full-Stack Developer & AI Engineer",
+    template: "%s | Tanish Majumdar",
+  },
+  alternates: {
+    canonical: "https://tanishm.site",
+  },
   description:
-    "Showcasing software projects by Tanish Majumdar - Web Developer, Freelancer, and AI Expert.",
+    "Tanish Majumdar - Full-Stack Web Developer, Freelancer & AI Engineer. Explore projects, blogs, and open-source work.",
   applicationName: "Tanish's Portfolio",
   authors: [
     {
@@ -23,6 +32,11 @@ export const metadata = {
   ],
   keywords: [
     "Tanish Majumdar",
+    "tanish",
+    "majumdar",
+    "tanishm",
+    "tanish34",
+    "tanish35",
     "portfolio",
     "web developer",
     "freelancer",
@@ -31,7 +45,17 @@ export const metadata = {
     "frontend developer",
     "backend developer",
   ],
-  robots: "index, follow",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   icons: {
     icon: [
       {
@@ -100,7 +124,30 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="dark">
       <head>
-        <link rel="canonical" href="https://tanishm.site/" />
+        <Script
+          id="ld-json"
+          type="application/ld+json"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              name: "Tanish Majumdar",
+              url: "https://tanishm.site",
+              image: "https://tanishm.site/images/port.png",
+              sameAs: [
+                "https://github.com/tanish35",
+                "https://linkedin.com/in/tanish-majumdar",
+                "https://twitter.com/Jaytilakmajumd2",
+              ],
+              jobTitle: "Full-Stack Developer",
+              worksFor: {
+                "@type": "Organization",
+                name: "Freelance",
+              },
+            }),
+          }}
+        />
       </head>
       <Script id="clarity-script" strategy="afterInteractive">
         {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "${process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID}");`}
@@ -110,7 +157,7 @@ export default function RootLayout({ children }) {
       </Script>
       <body className={inter.className}>
         <NavBar />
-        {children}
+        <main>{children}</main>
         <Toaster
           toastOptions={{
             position: "bottom-right",
@@ -123,13 +170,13 @@ export default function RootLayout({ children }) {
         />
         <SpeedInsights />
         <Analytics />
+        <Script
+          src="https://umami34.vercel.app/script.js"
+          data-website-id="5ed1fbcb-c766-4aee-9640-1db097636558"
+          strategy="afterInteractive"
+          defer
+        />
       </body>
-      <Script
-        src="https://umami34.vercel.app/script.js"
-        data-website-id="5ed1fbcb-c766-4aee-9640-1db097636558"
-        strategy="afterInteractive"
-        defer
-      />
     </html>
   );
 }
