@@ -6,6 +6,15 @@ import { motion, AnimatePresence } from "framer-motion";
 const experienceData = [
   {
     title: "SDE Intern",
+    company: "Your Brand Mate",
+    companyUrl: "yourbrandmate.agency",
+    companyLogo: "/images/ybm.png",
+    duration: "January 2026-Present",
+    description:
+      "Currently working on a product to generate lead and influencers for brands using AI. Implemented features include automated outreach, personalized content creation, and performance analytics to optimize marketing strategies.",
+  },
+  {
+    title: "SDE Intern",
     company: "Steora",
     companyUrl: "steorasystems.com",
     companyLogo: "/images/steora.svg",
