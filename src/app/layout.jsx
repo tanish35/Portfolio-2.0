@@ -3,8 +3,7 @@ import "@/assets/css/globals.css";
 import Script from "next/script";
 import { Toaster } from "react-hot-toast";
 import NavBar from "@/components/navbar";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/next";
+import { SITE_URL } from "@/lib/site";
 // import Script from "next/script";
 
 const inter = Inter({
@@ -13,13 +12,13 @@ const inter = Inter({
 });
 
 export const metadata = {
-  metadataBase: new URL("https://tanishm.site"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Tanish Majumdar | Full-Stack Developer & AI Engineer",
     template: "%s | Tanish Majumdar",
   },
   alternates: {
-    canonical: "https://tanishm.site",
+    canonical: SITE_URL,
   },
   description:
     "Tanish Majumdar - Full-Stack Web Developer, Freelancer & AI Engineer. Explore projects, blogs, and open-source work.",
@@ -98,12 +97,12 @@ export const metadata = {
     title: "Tanish's Portfolio",
     description:
       "Discover software projects by Tanish Majumdar. Explore his expertise in web development and AI.",
-    url: "https://tanishm.site",
+    url: SITE_URL,
     siteName: "Tanish's Portfolio",
     locale: "en_US",
     images: [
       {
-        url: "https://tanishm.site/images/port.png",
+        url: `${SITE_URL}/images/port.png`,
         width: 1200,
         height: 630,
         alt: "Tanish's Portfolio - A showcase of software projects",
@@ -116,7 +115,7 @@ export const metadata = {
     title: "Tanish's Portfolio",
     description:
       "Explore software projects and expertise in web development by Tanish Majumdar.",
-    images: ["https://tanishm.site/images/port.png"],
+    images: [`${SITE_URL}/images/port.png`],
   },
 };
 
@@ -133,8 +132,8 @@ export default function RootLayout({ children }) {
               "@context": "https://schema.org",
               "@type": "Person",
               name: "Tanish Majumdar",
-              url: "https://tanishm.site",
-              image: "https://tanishm.site/images/port.png",
+              url: SITE_URL,
+              image: `${SITE_URL}/images/port.png`,
               sameAs: [
                 "https://github.com/tanish35",
                 "https://linkedin.com/in/tanish-majumdar",
@@ -152,9 +151,6 @@ export default function RootLayout({ children }) {
       <Script id="clarity-script" strategy="afterInteractive">
         {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "${process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID}");`}
       </Script>
-      <Script id="google-script" strategy="afterInteractive">
-        {`window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '${process.env.NEXT_PUBLIC_GA4}');`}
-      </Script>
       <body className={inter.className}>
         <NavBar />
         <main>{children}</main>
@@ -167,14 +163,6 @@ export default function RootLayout({ children }) {
               color: "#fff",
             },
           }}
-        />
-        <SpeedInsights />
-        <Analytics />
-        <Script
-          src="https://umami34.vercel.app/script.js"
-          data-website-id="5ed1fbcb-c766-4aee-9640-1db097636558"
-          strategy="afterInteractive"
-          defer
         />
       </body>
     </html>

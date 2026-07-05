@@ -2,36 +2,7 @@
 
 import React, { forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
-const experienceData = [
-  {
-    title: "SDE Intern",
-    company: "Your Brand Mate",
-    companyUrl: "yourbrandmate.agency",
-    companyLogo: "/images/ybm.png",
-    duration: "January 2026-Present",
-    description:
-      "Currently working on a product to generate lead and influencers for brands using AI. Implemented features include automated outreach, personalized content creation, and performance analytics to optimize marketing strategies.",
-  },
-  {
-    title: "SDE Intern",
-    company: "Steora",
-    companyUrl: "steorasystems.com",
-    companyLogo: "/images/steora.svg",
-    duration: "September 2025-December 2025",
-    description:
-      "Built a scalable leave management system enabling automated leave planning and approvals. Designed a low-latency transcript search engine optimized to handle thousands of queries in sub-second response times. Developed an AI agent to automate user workflows including form submissions, intelligent query handling, and task orchestration.",
-  },
-  {
-    title: "SDE Intern",
-    company: "Polycab India Pvt. Ltd.",
-    companyUrl: "polycab.com",
-    companyLogo: "/images/polycab.jpg",
-    duration: "December 2024-February 2025",
-    description:
-      "Developed an internal employee management tool with automated features for project and leave tracking, a 4-week rolling plan, and capacity planning. Enabled distinct Admin and HR access, integrated performance leaderboards, and built analytical graphs for data-driven decision-making",
-  },
-];
+import { experienceData } from "@/data/experience";
 
 const Experience = forwardRef(({ visible }, ref) => {
   console.info("Experience component loaded", visible, ref);
@@ -67,7 +38,7 @@ const Experience = forwardRef(({ visible }, ref) => {
           </svg>
           <div>Work Timeline</div>
         </div>
-        <div className="custom-shadow-t min-h-60 border-secondary-300 border-1 bg-secondary-100 rounded-b-[24px] relative px-5 py-2 overflow-y-scroll space-y-6">
+        <div className="custom-shadow-t min-h-60 max-h-[70vh] border-secondary-300 border-1 bg-secondary-100 rounded-b-[24px] relative px-5 py-2 overflow-y-scroll space-y-6">
           <div className="flex absolute justify-end inset-0">
             <div className="relative">
               <div className="journey-line absolute overflow-hidden z-0 top-0 bottom-0"></div>
