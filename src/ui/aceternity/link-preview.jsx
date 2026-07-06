@@ -63,7 +63,7 @@ export const LinkPreview = ({
 
   return (
     <>
-      {isMounted ? (
+      {isMounted && !isStatic ? (
         <div className="hidden">
           <Image
             src={src}
@@ -71,7 +71,6 @@ export const LinkPreview = ({
             height={height}
             quality={quality}
             layout={layout}
-            priority={true}
             alt="hidden image"
           />
         </div>

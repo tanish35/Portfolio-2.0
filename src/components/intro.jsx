@@ -54,10 +54,11 @@ const Intro = forwardRef(({ scrollIndicatorHidden }, ref) => {
         <div className="space-y-4">
           <div className="flex gap-x-4 font-gotham-bold">
             <Image
-              src="/svgs/logo.svg"
+              src="/svgs/logo.webp"
               width={150}
               height={175}
               alt="Me"
+              priority
               className="p-2 bg-secondary-200 rounded-xl custom-shadow-200"
             />
             <div className="self-end space-y-1 cursor-pointer p-2 h-full w-full">
@@ -71,7 +72,7 @@ const Intro = forwardRef(({ scrollIndicatorHidden }, ref) => {
                   url="https://www.linkedin.com/in/tanish34/"
                   className="font-bold"
                   isStatic={true}
-                  imageSrc="/images/linkedin.png"
+                  imageSrc="/images/linkedin.webp"
                 >
                   <IconBrandLinkedin className="size-4 hover:text-teritiary-700 cursor-pointer" />
                 </LinkPreview>
@@ -79,7 +80,7 @@ const Intro = forwardRef(({ scrollIndicatorHidden }, ref) => {
                   url="https://github.com/tanish35"
                   className="font-bold"
                   isStatic={true}
-                  imageSrc="/images/git.png"
+                  imageSrc="/images/git.webp"
                 >
                   <IconBrandGithub className="size-4 hover:text-teritiary-700 cursor-pointer" />
                 </LinkPreview>
@@ -87,7 +88,7 @@ const Intro = forwardRef(({ scrollIndicatorHidden }, ref) => {
                   url="https://www.instagram.com/tanishm._.29/"
                   className="font-bold"
                   isStatic={true}
-                  imageSrc="/images/insta.png"
+                  imageSrc="/images/insta.webp"
                 >
                   <IconBrandInstagram className="size-4 hover:text-teritiary-700 cursor-pointer" />
                 </LinkPreview>

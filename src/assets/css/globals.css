@@ -95,6 +95,7 @@ div::-webkit-scrollbar {
 @font-face {
   font-family: 'gotham-bold';
   src: url('../fonts/gotham-bold.woff2') format('woff2');
+  font-display: swap;
 }
 
 .font-gotham-bold {
@@ -104,6 +105,7 @@ div::-webkit-scrollbar {
 @font-face {
   font-family: 'gotham-book';
   src: url('../fonts/gotham-book.woff2') format('woff2');
+  font-display: swap;
 }
 
 .font-gotham-book {
