@@ -133,36 +133,42 @@ const ProjectSummary = forwardRef(
       return (
         <div className="flex justify-center items-center relative justify-self-center h-full w-full">
           {renderKatakana("laptop", visible)}
-          <div
-            className={cn(
-              styles.model,
-              alternate ? "lg:left-[-20%]" : "lg:right-[-30%]"
-            )}
-          >
-            {!modelLoaded && (
-              <Loader center className={styles.loader} data-visible={visible} />
-            )}
-            {isHydrated && visible && (
-              <Suspense>
-                <Model
-                  alt={model.alt}
-                  cameraPosition={{ x: 0, y: 0, z: 8 }}
-                  showDelay={700}
-                  onLoad={handleModelLoad}
-                  show={visible}
-                  models={[
-                    {
-                      ...deviceModels.laptop,
-                      texture: {
-                        ...model.textures[0],
-                        sizes: laptopSizes,
-                      },
-                    },
-                  ]}
+          {!isMobile && (
+            <div
+              className={cn(
+                styles.model,
+                alternate ? "lg:left-[-20%]" : "lg:right-[-30%]"
+              )}
+            >
+              {!modelLoaded && (
+                <Loader
+                  center
+                  className={styles.loader}
+                  data-visible={visible}
                 />
-              </Suspense>
-            )}
-          </div>
+              )}
+              {isHydrated && visible && (
+                <Suspense>
+                  <Model
+                    alt={model.alt}
+                    cameraPosition={{ x: 0, y: 0, z: 8 }}
+                    showDelay={700}
+                    onLoad={handleModelLoad}
+                    show={visible}
+                    models={[
+                      {
+                        ...deviceModels.laptop,
+                        texture: {
+                          ...model.textures[0],
+                          sizes: laptopSizes,
+                        },
+                      },
+                    ]}
+                  />
+                </Suspense>
+              )}
+            </div>
+          )}
         </div>
       );
     }

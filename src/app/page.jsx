@@ -3,6 +3,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import Background from "@/components/background";
 import Intro from "@/components/intro";
+import Terminal from "@/components/terminal";
 import ContactMe from "@/components/contact-me";
 import Experience from "@/components/experience";
 import Projects from "@/components/projects";
@@ -72,6 +73,7 @@ export default function Home() {
   return (
     <main className="dark:bg-black bg-slate-50 relative overflow-x-hidden">
       <Background />
+      <Terminal />
       <Intro ref={intro} scrollIndicatorHidden={scrollIndicatorHidden} />
       <Projects
         ref={[

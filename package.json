@@ -18,12 +18,14 @@
     "postbuild": "next-sitemap",
     "start": "next start",
     "lint": "next lint",
+    "test:terminal": "node --test scripts/terminal-self-check.mjs",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
+    "@fingerprintjs/fingerprintjs": "^5.2.0",
     "@radix-ui/react-hover-card": "^1.1.2",
     "@react-three/fiber": "^8.16.6",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
@@ -33,6 +35,7 @@
     "babel-preset-es2015": "^6.24.1",
     "clsx": "^2.1.1",
     "framer-motion": "^11.2.6",
+    "fuse.js": "^7.4.2",
     "mini-svg-data-uri": "^1.4.4",
     "next": "^16.0.10",
     "next-sitemap": "^4.2.3",

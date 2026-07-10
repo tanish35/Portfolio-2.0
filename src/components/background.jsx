@@ -2,6 +2,8 @@
 
 import React, { lazy, Suspense } from "react";
 import { useHydrated } from "@/hooks/useHydrated";
+import { useWindowSize } from "@/hooks";
+import { media } from "@/utils/style";
 
 const DisplacementSphere = lazy(() =>
   import("@/ui/displacement-sphere/index").then((module) => ({
@@ -11,7 +13,9 @@ const DisplacementSphere = lazy(() =>
 
 export default function Background() {
   const isHydrated = useHydrated();
-  return isHydrated ? (
+  const { width } = useWindowSize();
+
+  return isHydrated && width > media.tablet ? (
     <Suspense>
       <DisplacementSphere />
     </Suspense>

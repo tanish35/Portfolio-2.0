@@ -3,7 +3,8 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/utils/cn";
-import Link from "next/link";
+
+const RESUME_URL = "/files/resume.pdf";
 
 export const FloatingNav = ({ navItems, className }) => {
   return (
@@ -21,13 +22,17 @@ export const FloatingNav = ({ navItems, className }) => {
           duration: 0.2,
         }}
         className={cn(
-          "flex max-w-fit fixed top-10 inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] rounded-full dark:bg-black bg-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] z-[5000] pr-2 pl-8 py-2  items-center justify-center space-x-4",
+          "flex max-w-fit fixed top-6 inset-x-0 mx-auto z-[5000] items-center justify-center space-x-1 sm:space-x-2",
+          "rounded-full border border-secondary-600 bg-[#100f0d]/95",
+          "custom-shadow-200 px-2 sm:pl-5 sm:pr-2 py-1.5 sm:py-2",
+          "font-gotham-book",
           className,
         )}
       >
         {navItems.map((navItem, idx) => (
           <button
             key={`link=${idx}`}
+            type="button"
             onClick={() => {
               if (navItem.link.startsWith("/")) window.location = navItem.link;
               else {
@@ -39,24 +44,27 @@ export const FloatingNav = ({ navItems, className }) => {
               }
             }}
             className={cn(
-              "relative dark:text-neutral-50 items-center flex space-x-1 text-neutral-600 dark:hover:text-neutral-300 hover:text-neutral-500",
+              "relative items-center flex space-x-1 min-h-11 min-w-11 sm:min-h-0 sm:min-w-0 justify-center",
+              "text-teritiary-400 hover:text-primary-200 focus-visible:text-primary-200",
+              "rounded-full px-2 sm:px-3 py-2 sm:py-1.5 text-sm transition-colors",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#100f0d]",
             )}
           >
             <span className="block sm:hidden">{navItem.icon}</span>
-            <span className="hidden sm:block text-sm">{navItem.name}</span>
+            <span className="hidden sm:block">{navItem.name}</span>
           </button>
         ))}
         <button
+          type="button"
+          aria-label="Open resume PDF"
           onClick={() => {
-            const el = document.querySelector("#contact");
-            if (el) {
-              el.scrollIntoView({
-                behavior: "smooth",
-              });
-              history.pushState(null, "", "#contact");
-            } else window.location = "/#contact";
+            window.open(RESUME_URL, "_blank", "noopener,noreferrer");
           }}
-          className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-full"
+          className={cn(
+            "border border-secondary-600 text-sm font-medium relative",
+            "text-teritiary-600 hover:text-primary-200 px-4 py-2 rounded-full min-h-11 sm:min-h-0",
+            "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#100f0d]",
+          )}
         >
           <span>Resume</span>
           <span className="absolute inset-x-0 w-1/2 mx-auto -bottom-px bg-gradient-to-r from-transparent via-amber-500 to-transparent h-px" />
