@@ -399,16 +399,23 @@ div::-webkit-scrollbar {
   text-overflow: ellipsis;
 }
 
+/* Masonry columns pack cards tightly so a tall card never leaves a
+   half-empty neighbour column (no more wasted whitespace). */
 .whoami-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.5rem;
+  columns: 1;
+  column-gap: 0.5rem;
   padding: 0.65rem;
 }
 
-@media (min-width: 560px) {
+@media (min-width: 520px) {
   .whoami-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    columns: 2;
+  }
+}
+
+@media (min-width: 820px) {
+  .whoami-grid {
+    columns: 3;
   }
 }
 
@@ -418,6 +425,8 @@ div::-webkit-scrollbar {
   background: rgba(12, 12, 12, 0.65);
   min-width: 0;
   overflow: hidden;
+  break-inside: avoid;
+  margin-bottom: 0.5rem;
 }
 
 .whoami-card-head {
@@ -511,6 +520,110 @@ div::-webkit-scrollbar {
   display: grid;
   gap: 0.25rem;
   font-size: 0.8rem;
+}
+
+.music-badge {
+  display: inline-block;
+  font-size: 0.58rem;
+  line-height: 1;
+  padding: 0.15rem 0.3rem;
+  border-radius: 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.music-badge-full {
+  color: rgb(18, 17, 15);
+  background: rgb(232, 75, 47);
+}
+
+.music-badge-preview {
+  color: rgb(180, 180, 180);
+  border: 1px solid rgb(70, 70, 70);
+}
+
+/* help card — aligned command/description columns per section */
+.help-card {
+  border: 1px solid rgb(56, 56, 56);
+  border-radius: 0.65rem;
+  background: rgba(12, 12, 12, 0.5);
+  overflow: hidden;
+}
+
+.help-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.15rem 0.9rem;
+  padding: 0.6rem 0.7rem;
+}
+
+@media (min-width: 520px) {
+  .help-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.help-section {
+  min-width: 0;
+  padding: 0.25rem 0;
+}
+
+.help-section-title {
+  margin: 0 0 0.25rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgb(232, 75, 47);
+}
+
+.help-rows {
+  margin: 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 0.75rem;
+  row-gap: 0.12rem;
+}
+
+.help-row {
+  display: contents;
+}
+
+.help-row dt {
+  margin: 0;
+  color: rgb(230, 230, 230);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.help-row dd {
+  margin: 0;
+  color: rgb(150, 150, 150);
+  font-size: 0.72rem;
+  min-width: 0;
+}
+
+.help-fun {
+  border-top: 1px solid rgb(45, 45, 45);
+  padding: 0.5rem 0.7rem 0.6rem;
+}
+
+.help-fun-label {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgb(232, 75, 47);
+  margin-bottom: 0.2rem;
+}
+
+.help-fun-line {
+  font-size: 0.72rem;
+  color: rgb(160, 160, 160);
+  line-height: 1.5;
 }
 
 .sudo-anim,
