@@ -32,6 +32,19 @@ yarn-error.log*
 # vercel
 .vercel
 
+# cloudflare / opennext
+/.open-next/
+/.wrangler/
+.dev.vars
+cloudflare-env.d.ts
+
+# next-sitemap generated output (regenerated on every build via postbuild)
+/public/sitemap.xml
+/public/sitemap-0.xml
+/public/robots.txt
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+resume.pdf

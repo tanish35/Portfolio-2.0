@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useState } from "react";
+import { forwardRef } from "react";
 import { DecoderText } from "@/ui/decoder-text";
 import {
   IconMapPin,
@@ -10,29 +10,11 @@ import {
 } from "@tabler/icons-react";
 import { RiScrollToBottomLine } from "react-icons/ri";
 import { motion, AnimatePresence } from "framer-motion";
-import toast from "react-hot-toast";
 import { Highlight } from "@/ui/aceternity/hero-highlight";
-import { PlaceholdersAndVanishInput } from "@/ui/aceternity/placeholders-and-vanish-input";
 import Image from "next/image";
 import { LinkPreview } from "@/ui/aceternity/link-preview";
 
 const Intro = forwardRef(({ scrollIndicatorHidden }, ref) => {
-  const [email, setEmail] = useState("");
-  const validateEmail = (email) => {
-    return email.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
-  };
-  // const subscribe = async (email) => {
-  //   try {
-  //     const res = await fetch("/api/subscribe", {
-  //       method: "POST",
-  //       body: JSON.stringify({ email }),
-  //     });
-  //     if (res.ok) toast.success("Subscribed to newsletter!");
-  //     else toast.error("Failed to subscribe!");
-  //   } catch (err) {
-  //     toast.error("Failed to subscribe!");
-  //   }
-  // };
   return (
     <AnimatePresence mode="wait">
       <motion.section
@@ -49,15 +31,18 @@ const Intro = forwardRef(({ scrollIndicatorHidden }, ref) => {
         transition={{
           duration: 0.5,
         }}
-        className="md:text-4xl text-2xl bg-dot-white/[0.2] relative font-bold flex items-center text-teritiary-300 justify-center"
+        className="md:text-4xl text-2xl bg-dot-white/[0.2] relative font-bold flex items-center text-teritiary-300 justify-center md:justify-start md:pl-[8%] lg:pl-[12%]"
       >
         <div className="space-y-4">
           <div className="flex gap-x-4 font-gotham-bold">
             <Image
-              src="/svgs/logo.svg"
+              src="/svgs/logo.webp"
               width={150}
-              height={175}
+              height={150}
               alt="Me"
+              priority
+              fetchPriority="high"
+              sizes="150px"
               className="p-2 bg-secondary-200 rounded-xl custom-shadow-200"
             />
             <div className="self-end space-y-1 cursor-pointer p-2 h-full w-full">
@@ -66,12 +51,12 @@ const Intro = forwardRef(({ scrollIndicatorHidden }, ref) => {
                 <IconMapPin className="size-4" />
                 <DecoderText text="Mumbai" delay={500} />
               </div>
-              <div className="font-sans text-base flex gap-x-2 items-center text-teritiary-400">
+              <div className="flex gap-x-2 items-center text-teritiary-400 text-base font-sans">
                 <LinkPreview
                   url="https://www.linkedin.com/in/tanish34/"
                   className="font-bold"
                   isStatic={true}
-                  imageSrc="/images/linkedin.png"
+                  imageSrc="/images/linkedin.webp"
                 >
                   <IconBrandLinkedin className="size-4 hover:text-teritiary-700 cursor-pointer" />
                 </LinkPreview>
@@ -79,7 +64,7 @@ const Intro = forwardRef(({ scrollIndicatorHidden }, ref) => {
                   url="https://github.com/tanish35"
                   className="font-bold"
                   isStatic={true}
-                  imageSrc="/images/git.png"
+                  imageSrc="/images/git.webp"
                 >
                   <IconBrandGithub className="size-4 hover:text-teritiary-700 cursor-pointer" />
                 </LinkPreview>
@@ -87,24 +72,10 @@ const Intro = forwardRef(({ scrollIndicatorHidden }, ref) => {
                   url="https://www.instagram.com/tanishm._.29/"
                   className="font-bold"
                   isStatic={true}
-                  imageSrc="/images/insta.png"
+                  imageSrc="/images/insta.webp"
                 >
                   <IconBrandInstagram className="size-4 hover:text-teritiary-700 cursor-pointer" />
                 </LinkPreview>
-              </div>
-              <div className="!mt-4 flex max-w-sm">
-                {/* <PlaceholdersAndVanishInput
-                  placeholders={["Join my newsletter..."]}
-                  onChange={(e) => setEmail(e.target.value)}
-                  id="newsletter-form"
-                  // onSubmit={async () => {
-                  //   if (!validateEmail(email)) {
-                  //     toast.error("Invalid email address!");
-                  //     return;
-                  //   }
-                  //   subscribe(email);
-                  // }}
-                /> */}
               </div>
             </div>
           </div>
@@ -117,14 +88,15 @@ const Intro = forwardRef(({ scrollIndicatorHidden }, ref) => {
         </div>
         {!scrollIndicatorHidden && (
           <button
-            aria-label="scroll-indicator"
+            type="button"
+            aria-label="Scroll to next section"
             onClick={() => {
               window.scrollTo({
                 top: window.innerHeight,
                 behavior: "smooth",
               });
             }}
-            className="absolute bottom-10 left-[50%] hidden md:block"
+            className="absolute bottom-10 left-[50%] -translate-x-1/2 hidden md:block"
           >
             <RiScrollToBottomLine className="animate-pulse opacity-30 text-teritiary-400 size-8" />
           </button>
@@ -133,5 +105,7 @@ const Intro = forwardRef(({ scrollIndicatorHidden }, ref) => {
     </AnimatePresence>
   );
 });
+
+Intro.displayName = "Intro";
 
 export default Intro;

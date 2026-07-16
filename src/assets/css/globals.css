@@ -95,6 +95,7 @@ div::-webkit-scrollbar {
 @font-face {
   font-family: 'gotham-bold';
   src: url('../fonts/gotham-bold.woff2') format('woff2');
+  font-display: swap;
 }
 
 .font-gotham-bold {
@@ -104,13 +105,421 @@ div::-webkit-scrollbar {
 @font-face {
   font-family: 'gotham-book';
   src: url('../fonts/gotham-book.woff2') format('woff2');
+  font-display: swap;
 }
 
 .font-gotham-book {
   font-family: 'gotham-book';
 }
 
+@font-face {
+  font-family: 'ipa-gothic';
+  src: url('../fonts/ipa-gothic.woff2') format('woff2');
+  font-display: swap;
+}
+
+.font-ipa-gothic {
+  font-family: 'ipa-gothic', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
 .journey-line {
   background: linear-gradient(180deg, rgba(56, 56, 56, 0) 0%, var(--token-80c5ec82-af54-417d-8dd2-fad7df68764b, rgb(56, 56, 56)) 36.03603603603604%, rgba(56, 56, 56, 1) 81.08108108108108%, rgba(56, 56, 56, 0) 100.9009009009009%);
   width: 2px;
+}
+
+@keyframes terminal-caret-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes terminal-stagger-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.terminal-caret {
+  animation: terminal-caret-blink 1.1s step-end infinite;
+}
+
+.terminal-input {
+  caret-color: rgb(232, 75, 47);
+}
+
+.terminal-input:focus {
+  caret-color: rgb(232, 75, 47);
+}
+
+@supports (caret-shape: block) {
+  .terminal-input {
+    caret-shape: block;
+  }
+}
+
+.terminal-stagger {
+  opacity: 0;
+  animation: terminal-stagger-in 0.35s ease-out forwards;
+}
+
+.terminal-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(64, 64, 64) transparent;
+}
+
+.terminal-scroll::-webkit-scrollbar {
+  display: block;
+  width: 6px;
+}
+
+.terminal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.terminal-scroll::-webkit-scrollbar-thumb {
+  background: rgb(64, 64, 64);
+  border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .terminal-caret {
+    animation: none;
+    opacity: 1;
+  }
+
+  .terminal-stagger {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.terminal-float {
+  box-sizing: border-box;
+  /* Override site-wide custom cursors so terminal controls stay usable */
+  cursor: default !important;
+}
+
+.terminal-float *,
+.terminal-float *::before,
+.terminal-float *::after {
+  cursor: inherit !important;
+}
+
+.terminal-float button,
+.terminal-float a,
+.terminal-launcher {
+  cursor: pointer !important;
+}
+
+.terminal-float input,
+.terminal-float textarea {
+  cursor: text !important;
+}
+
+.terminal-float .terminal-range {
+  cursor: pointer !important;
+}
+
+.terminal-size-transition {
+  transition:
+    width 0.18s ease,
+    height 0.18s ease,
+    left 0.18s ease,
+    top 0.18s ease;
+}
+
+.terminal-no-transition {
+  transition: none !important;
+}
+
+.terminal-titlebar {
+  cursor: grab !important;
+  touch-action: none;
+  user-select: none;
+}
+
+.terminal-titlebar * {
+  cursor: inherit !important;
+}
+
+.terminal-titlebar button {
+  cursor: pointer !important;
+}
+
+.terminal-dragging,
+.terminal-dragging * {
+  cursor: grabbing !important;
+}
+
+.terminal-dragging button {
+  cursor: grabbing !important;
+}
+
+.terminal-range {
+  accent-color: rgb(232, 75, 47);
+  height: 1.25rem;
+}
+
+.terminal-launcher {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  cursor: pointer !important;
+}
+
+/* Bottom-right grip (free-positioned window) */
+.terminal-resize-grip {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 2px;
+  color: rgb(117, 117, 117);
+  cursor: nwse-resize !important;
+  z-index: 2;
+  touch-action: none;
+  user-select: none;
+}
+
+.terminal-resize-grip:hover,
+.terminal-resize-grip:active {
+  color: rgb(232, 75, 47);
+  cursor: nwse-resize !important;
+}
+
+.terminal-resize-grip * {
+  cursor: nwse-resize !important;
+  pointer-events: none;
+}
+
+/* whoamireally report */
+.whoami-report {
+  border: 1px solid rgb(64, 64, 64);
+  border-radius: 14px;
+  background:
+    radial-gradient(ellipse 70% 50% at 0% 0%, rgba(230, 55, 24, 0.12), transparent 55%),
+    rgb(18, 17, 15);
+  overflow: hidden;
+}
+
+.whoami-hero {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.85rem;
+  border-bottom: 1px solid rgb(45, 45, 45);
+}
+
+.whoami-hero-mark {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.55rem;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: rgb(252, 252, 252);
+  background: linear-gradient(145deg, rgb(230, 55, 24), rgb(180, 40, 15));
+  box-shadow: 0 0 0 1px rgba(230, 55, 24, 0.35);
+  flex-shrink: 0;
+}
+
+.whoami-title {
+  font-size: 0.95rem;
+  color: rgb(252, 252, 252);
+  letter-spacing: 0.02em;
+}
+
+.whoami-subtitle {
+  font-size: 0.7rem;
+  color: rgb(153, 153, 153);
+  margin-top: 0.1rem;
+}
+
+.whoami-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid rgb(45, 45, 45);
+}
+
+@media (min-width: 520px) {
+  .whoami-summary {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.whoami-chip {
+  border: 1px solid rgb(56, 56, 56);
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.45rem;
+  background: rgba(0, 0, 0, 0.25);
+  min-width: 0;
+}
+
+.whoami-chip-label {
+  display: block;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgb(232, 75, 47);
+}
+
+.whoami-chip-value {
+  display: block;
+  font-size: 0.72rem;
+  color: rgb(230, 230, 230);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.whoami-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  padding: 0.65rem;
+}
+
+@media (min-width: 560px) {
+  .whoami-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.whoami-card {
+  border: 1px solid rgb(50, 50, 50);
+  border-radius: 0.65rem;
+  background: rgba(12, 12, 12, 0.65);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.whoami-card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.55rem;
+  border-bottom: 1px solid rgb(40, 40, 40);
+  background: rgba(230, 55, 24, 0.06);
+}
+
+.whoami-card-icon {
+  color: rgb(232, 75, 47);
+  font-size: 0.75rem;
+}
+
+.whoami-card-title {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgb(242, 242, 242);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.whoami-rows {
+  margin: 0;
+  padding: 0.35rem 0.55rem 0.5rem;
+}
+
+.whoami-row {
+  display: grid;
+  grid-template-columns: minmax(5.5rem, 34%) 1fr;
+  gap: 0.4rem;
+  padding: 0.22rem 0;
+  border-bottom: 1px solid rgba(40, 40, 40, 0.85);
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.whoami-row:last-child {
+  border-bottom: 0;
+}
+
+.whoami-row dt {
+  margin: 0;
+  color: rgb(232, 75, 47);
+  font-weight: 500;
+}
+
+.whoami-row dd {
+  margin: 0;
+  color: rgb(217, 217, 217);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.whoami-footer,
+.whoami-loading {
+  margin: 0;
+  padding: 0.45rem 0.75rem 0.65rem;
+  font-size: 0.68rem;
+  color: rgb(140, 140, 140);
+}
+
+.whoami-loading {
+  color: rgb(232, 75, 47);
+  border-top: 1px solid rgb(45, 45, 45);
+}
+
+.music-results {
+  border: 1px solid rgb(56, 56, 56);
+  border-radius: 0.65rem;
+  padding: 0.5rem 0.65rem;
+  background: rgba(12, 12, 12, 0.5);
+}
+
+.music-results-head {
+  font-size: 0.72rem;
+  color: rgb(232, 75, 47);
+  margin-bottom: 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.music-results-list {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+}
+
+.sudo-anim,
+.terminal-anim-accent {
+  color: rgb(232, 75, 47);
+  text-shadow: 0 0 18px rgba(230, 55, 24, 0.35);
+}
+
+.terminal-anim-matrix {
+  color: rgb(80, 220, 100);
+  text-shadow: 0 0 12px rgba(80, 220, 100, 0.35);
 }

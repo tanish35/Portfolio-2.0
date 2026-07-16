@@ -18,8 +18,7 @@ export const LinkPreview = ({
   className,
   width = 200,
   height = 125,
-  quality = 50,
-  layout = "fixed",
+  quality = 75,
   isStatic = false,
   imageSrc = "",
 }) => {
@@ -63,16 +62,15 @@ export const LinkPreview = ({
 
   return (
     <>
-      {isMounted ? (
+      {isMounted && !isStatic ? (
         <div className="hidden">
           <Image
             src={src}
             width={width}
             height={height}
             quality={quality}
-            layout={layout}
-            priority={true}
             alt="hidden image"
+            style={{ width: "auto", height: "auto" }}
           />
         </div>
       ) : null}
@@ -127,10 +125,10 @@ export const LinkPreview = ({
                     width={width}
                     height={height}
                     quality={quality}
-                    layout={layout}
                     priority={true}
                     className="rounded-lg"
                     alt="preview image"
+                    style={{ width, height }}
                   />
                 </Link>
               </motion.div>
