@@ -5,6 +5,7 @@ const nextConfig = {
     // next/image works everywhere without depending on Cloudflare Images / zone
     // resizing. (The heavy visuals are Three.js textures, not next/image.)
     unoptimized: true,
+    qualities: [50, 75],
     remotePatterns: [
       { protocol: "https", hostname: "aceternity.com" },
       { protocol: "https", hostname: "images.unsplash.com" },
