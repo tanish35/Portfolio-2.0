@@ -59,7 +59,7 @@ export const HELP_SECTIONS = [
   {
     title: "Music",
     commands: [
-      ["play <song>", "Search full tracks + previews"],
+      ["play <song>", "Search and play full tracks · 320 kbps"],
       ["search <query>", "List matches only"],
       ["track <n>", "Play result # from search"],
       ["results", "Reprint last results"],

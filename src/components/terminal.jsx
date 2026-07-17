@@ -369,27 +369,30 @@ export default function Terminal() {
     };
   }, []);
 
-  const playAnimFrames = useCallback((frames, { variant = "accent", interval = 120 } = {}) => {
-    const entryId = makeId();
-    const list = Array.isArray(frames) ? frames : [String(frames)];
-    append(
-      [{ id: entryId, type: "anim", variant, frame: list[0] }],
-      "animation",
-    );
-    animTimersRef.current.forEach(clearTimeout);
-    animTimersRef.current = [];
-    list.forEach((frame, i) => {
-      if (i === 0) return;
-      const t = setTimeout(() => {
-        setTranscript((prev) =>
-          prev.map((e) =>
-            e.id === entryId && e.type === "anim" ? { ...e, frame } : e,
-          ),
-        );
-      }, i * interval);
-      animTimersRef.current.push(t);
-    });
-  }, [append]);
+  const playAnimFrames = useCallback(
+    (frames, { variant = "accent", interval = 120 } = {}) => {
+      const entryId = makeId();
+      const list = Array.isArray(frames) ? frames : [String(frames)];
+      append(
+        [{ id: entryId, type: "anim", variant, frame: list[0] }],
+        "animation",
+      );
+      animTimersRef.current.forEach(clearTimeout);
+      animTimersRef.current = [];
+      list.forEach((frame, i) => {
+        if (i === 0) return;
+        const t = setTimeout(() => {
+          setTranscript((prev) =>
+            prev.map((e) =>
+              e.id === entryId && e.type === "anim" ? { ...e, frame } : e,
+            ),
+          );
+        }, i * interval);
+        animTimersRef.current.push(t);
+      });
+    },
+    [append],
+  );
 
   const runSudoPrank = useCallback(
     (raw) => {
@@ -498,15 +501,18 @@ export default function Terminal() {
         sudoTimersRef.current.push(t);
       });
 
-      const closeT = setTimeout(() => {
-        setTranscript([]);
-        setHistory([]);
-        setHistoryIndex(-1);
-        setInput("");
-        setSudoBusy(false);
-        setMinimized(true);
-        setLiveMessage("Terminal closed");
-      }, frames.length * 480 + 700);
+      const closeT = setTimeout(
+        () => {
+          setTranscript([]);
+          setHistory([]);
+          setHistoryIndex(-1);
+          setInput("");
+          setSudoBusy(false);
+          setMinimized(true);
+          setLiveMessage("Terminal closed");
+        },
+        frames.length * 480 + 700,
+      );
       sudoTimersRef.current.push(closeT);
     },
     [sudoBusy],
@@ -514,22 +520,30 @@ export default function Terminal() {
 
   const loadAndPlayTrack = useCallback(
     (nextTrack, queryLabel) => {
-      if (!nextTrack?.previewUrl) {
+      if (!nextTrack?.previewUrl && !nextTrack?.canStreamFull) {
         return text(
           `No preview available for ${nextTrack?.name || "track"} — ${nextTrack?.artist || ""}`.trim(),
         );
       }
 
-      setTrack(nextTrack);
+      const isDeezer =
+        typeof nextTrack?.id === "string" && nextTrack.id.startsWith("deezer:");
+      const useFull = isDeezer && nextTrack.canStreamFull !== false;
+
+      setTrack({ ...nextTrack, isFull: useFull || Boolean(nextTrack.isFull) });
       setMusicStatus("loading");
       setPlaying(false);
       setElapsed(0);
       setDuration(0);
 
+      const playSrc = useFull
+        ? `/api/music/stream?id=${encodeURIComponent(nextTrack.id)}`
+        : nextTrack.previewUrl;
+
       requestAnimationFrame(() => {
         const audio = audioRef.current;
         if (!audio) return;
-        audio.src = nextTrack.previewUrl;
+        audio.src = playSrc;
         audio.load();
         audio
           .play()
@@ -540,23 +554,36 @@ export default function Terminal() {
           .catch(() => {
             setPlaying(false);
             setMusicStatus("press-play");
-            append(
-              [
-                text(
-                  "Preview loaded — press ▶ in the player if autoplay was blocked.",
-                ),
-              ],
-              "Press play",
-            );
+            // If the full stream blocked autoplay, offer the 30s preview as
+            // an immediate fallback so the user can still hear something.
+            if (useFull && nextTrack.previewUrl) {
+              append(
+                [
+                  text(
+                    "Full track loaded — press ▶ in the player if autoplay was blocked.",
+                  ),
+                ],
+                "Press play",
+              );
+            } else {
+              append(
+                [
+                  text(
+                    "Preview loaded — press ▶ in the player if autoplay was blocked.",
+                  ),
+                ],
+                "Press play",
+              );
+            }
           });
       });
 
-      const isFull = Boolean(nextTrack.isFull);
+      const isFull = useFull || Boolean(nextTrack.isFull);
       return text([
         queryLabel ? `search match for: ${queryLabel}` : "loading…",
         `${isFull ? "playing" : "preview"} ${nextTrack.name} — ${nextTrack.artist}`,
         isFull
-          ? `[full track${nextTrack.source ? ` · ${nextTrack.source}` : ""}]`
+          ? `[full track · 320 kbps${nextTrack.source ? ` · ${nextTrack.source}` : ""}]`
           : "[30s free preview · not full track]",
       ]);
     },
@@ -736,7 +763,9 @@ export default function Terminal() {
             [
               `${track.name} — ${track.artist}`,
               `${musicStatus || (playing ? "playing" : "paused")}  ${formatTime(elapsed)} / ${formatTime(duration)}`,
-              track.isFull ? "[full track]" : "[30s free preview]",
+              track.isFull
+                ? "[full track · 320 kbps · streamed from /api/music/stream]"
+                : "[30s free preview]",
               track.externalUrl || "",
             ].filter(Boolean),
           ),
@@ -1337,9 +1366,7 @@ export default function Terminal() {
           } else {
             out.push(
               text(
-                history.map(
-                  (h, i) => `  ${String(i + 1).padStart(3)}  ${h}`,
-                ),
+                history.map((h, i) => `  ${String(i + 1).padStart(3)}  ${h}`),
               ),
             );
           }
@@ -1393,7 +1420,10 @@ export default function Terminal() {
                 );
                 return;
               }
-              append([text(data.line || `weather unavailable for ${place}`)], "weather");
+              append(
+                [text(data.line || `weather unavailable for ${place}`)],
+                "weather",
+              );
             } catch {
               append(
                 [text("weather fetch failed (offline or blocked)")],
