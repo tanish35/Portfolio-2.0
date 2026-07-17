@@ -43,7 +43,7 @@ export const HELP_SECTIONS = [
       ["neofetch", "Portfolio system card"],
       ["whoamireally", "Browser fingerprint + IP"],
       ["ifconfig", "Connectivity snapshot"],
-      ["nmap <host>", "Simulated scan (labeled)"],
+      ["nmap <host>", "Probe reachable web ports"],
       ["clear", "Clear transcript"],
     ],
   },

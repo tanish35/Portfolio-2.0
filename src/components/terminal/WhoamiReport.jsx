@@ -1,55 +1,63 @@
 export function WhoamiReport({ report }) {
   if (!report) return null;
+
+  const sections = report.sections || [];
+  const summary = report.summary || [];
+
   return (
-    <div className="whoami-report">
-      <div className="whoami-hero">
-        <div className="whoami-hero-mark" aria-hidden="true">
-          ?
-        </div>
-        <div className="min-w-0">
-          <div className="whoami-title">{report.title || "whoamireally"}</div>
-          <div className="whoami-subtitle">
-            {report.subtitle || "Browser session probe"}
-          </div>
+    <div className="space-y-3 text-sm">
+      <div>
+        <div className="text-primary-200">{report.title || "whoamireally"}</div>
+        <div className="text-teritiary-300 text-xs">
+          {report.subtitle || "Browser session probe"}
         </div>
       </div>
 
-      {report.summary?.length > 0 && (
-        <div className="whoami-summary">
-          {report.summary.map((item) => (
-            <div key={item.label} className="whoami-chip">
-              <span className="whoami-chip-label">{item.label}</span>
-              <span className="whoami-chip-value">{item.value}</span>
-            </div>
+      {summary.length > 0 && (
+        <div>
+          <div className="text-primary-300 uppercase tracking-wider text-xs mb-1">
+            Session
+          </div>
+          {summary.map((item) => (
+            <Row key={item.label} label={item.label} value={item.value} />
           ))}
         </div>
       )}
 
-      <div className="whoami-grid">
-        {(report.sections || []).map((sec) => (
-          <section key={sec.id || sec.title} className="whoami-card">
-            <header className="whoami-card-head">
-              <span className="whoami-card-icon" aria-hidden="true">
-                {sec.icon || "·"}
-              </span>
-              <h3 className="whoami-card-title">{sec.title}</h3>
-            </header>
-            <dl className="whoami-rows">
-              {(sec.rows || []).map((row) => (
-                <div key={`${sec.title}-${row.label}`} className="whoami-row">
-                  <dt>{row.label}</dt>
-                  <dd title={row.value}>{row.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </section>
-        ))}
-      </div>
+      {sections.map((sec) => (
+        <div key={sec.id || sec.title}>
+          <div className="text-primary-300 uppercase tracking-wider text-xs mb-1">
+            {sec.title}
+          </div>
+          {(sec.rows || []).map((row) => (
+            <Row
+              key={`${sec.title}-${row.label}`}
+              label={row.label}
+              value={row.value}
+            />
+          ))}
+        </div>
+      ))}
 
-      {report.footer && <p className="whoami-footer">{report.footer}</p>}
-      {report.loading && (
-        <p className="whoami-loading">Gathering extended signals…</p>
+      {report.footer && (
+        <div className="text-teritiary-300 text-xs">{report.footer}</div>
       )}
+      {report.loading && (
+        <div className="text-primary-300 text-xs">
+          Gathering extended signals…
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Row({ label, value }) {
+  return (
+    <div className="flex gap-x-4">
+      <span className="text-primary-300 whitespace-nowrap min-w-[8rem]">
+        {label}
+      </span>
+      <span className="text-teritiary-500 break-all min-w-0">{value}</span>
     </div>
   );
 }

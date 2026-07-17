@@ -20,8 +20,8 @@ import {
   saveNotes,
   saveUiPrefs,
   scrollToHash,
-  simulatedNmap,
 } from "@/components/terminal/helpers";
+import { pingHost, scanHost } from "@/lib/terminal-net";
 import { PreviewPlayer } from "@/components/terminal/PreviewPlayer";
 import { TranscriptEntry } from "@/components/terminal/TranscriptEntry";
 import {
@@ -44,7 +44,6 @@ import {
   jokeText,
   manPage,
   matrixFrames,
-  pingLines,
   skillsLines,
   trainFrames,
 } from "@/lib/terminal-fun";
@@ -90,6 +89,9 @@ export default function Terminal() {
   const [sizeOpen, setSizeOpen] = useState(false);
   const [resizing, setResizing] = useState(false);
   const [dragging, setDragging] = useState(false);
+  // When false, the window height hugs its content (no dead space under short
+  // output). Flips to true once the user drags/sets a height explicitly.
+  const [userSized, setUserSized] = useState(false);
 
   const [cwd, setCwd] = useState(VIRTUAL_ROOT);
   const [notes, setNotes] = useState({});
@@ -162,17 +164,21 @@ export default function Terminal() {
       else setMinimized(true);
     } else {
       const defaults = defaultTerminalSize(vw, vh);
-      // Prefer fresh larger defaults over older compact saved sizes
+      // Only restore a saved size/position if the user explicitly resized
+      // before; otherwise use the square bottom-right default.
       const savedW = prefs?.width;
       const savedH = prefs?.height;
       const useSavedSize =
+        prefs?.manualSize === true &&
         Number.isFinite(savedW) &&
-        Number.isFinite(savedH) &&
-        savedW >= vw * 0.45;
+        Number.isFinite(savedH);
       const clamped = useSavedSize
         ? clampTerminalSize(savedW, savedH, vw, vh)
         : defaults;
       setSize(clamped);
+      // Auto-fit height by default; only honor a saved explicit height if the
+      // user had manually resized before.
+      setUserSized(useSavedSize && prefs?.manualSize === true);
 
       if (
         Number.isFinite(prefs?.x) &&
@@ -231,8 +237,9 @@ export default function Terminal() {
       x: position.x,
       y: position.y,
       minimized,
+      manualSize: userSized,
     });
-  }, [size, position, minimized, mounted]);
+  }, [size, position, minimized, mounted, userSized]);
 
   // Pointer move (title bar) + resize (bottom-right grip)
   useEffect(() => {
@@ -244,8 +251,8 @@ export default function Terminal() {
           clampTerminalPosition(
             drag.startX + (e.clientX - drag.pointerX),
             drag.startY + (e.clientY - drag.pointerY),
-            sizeRef.current.width,
-            sizeRef.current.height,
+            windowRef.current?.offsetWidth ?? sizeRef.current.width,
+            windowRef.current?.offsetHeight ?? sizeRef.current.height,
             window.innerWidth,
             window.innerHeight,
           ),
@@ -1351,9 +1358,21 @@ export default function Terminal() {
           return;
         }
         case "ping": {
-          out.push(text(pingLines(args[0] || "tanish.site")));
-          live = "ping";
-          break;
+          const host = args[0] || "tanish.site";
+          out.push(text(`PING ${host} — probing…`));
+          append(out, "ping");
+          setHistory((h) => [...h, raw]);
+          setHistoryIndex(-1);
+          setInput("");
+          (async () => {
+            try {
+              const lines = await pingHost(host);
+              append([text(lines)], "ping complete");
+            } catch {
+              append([text(`ping failed for ${host}`)], "ping failed");
+            }
+          })();
+          return;
         }
         case "weather": {
           append(out, "weather");
@@ -1543,12 +1562,24 @@ export default function Terminal() {
         }
         case "nmap": {
           if (!args[0]) {
-            usage("usage: nmap <host>  (try: nmap portfolio)");
+            usage("usage: nmap <host>  (try: nmap tanish.site)");
             break;
           }
-          out.push(text(simulatedNmap(args.join(" "))));
-          live = "nmap simulated";
-          break;
+          const host = args[0];
+          out.push(text(`Scanning ${host} — probing web ports…`));
+          append(out, "nmap");
+          setHistory((h) => [...h, raw]);
+          setHistoryIndex(-1);
+          setInput("");
+          (async () => {
+            try {
+              const lines = await scanHost(host);
+              append([text(lines)], "nmap complete");
+            } catch {
+              append([text(`scan failed for ${host}`)], "nmap failed");
+            }
+          })();
+          return;
         }
         case "spotify": {
           const sub = (args[0] || "").toLowerCase();
@@ -1774,6 +1805,7 @@ export default function Terminal() {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const next = defaultTerminalSize(vw, vh);
+    setUserSized(false);
     setSize(next);
     setPosition(defaultTerminalPosition(vw, vh, next.width, next.height));
     setSizeOpen(false);
@@ -1799,12 +1831,21 @@ export default function Terminal() {
     if (isMobile) return;
     e.preventDefault();
     e.stopPropagation();
+    // In auto-fit mode size.height is stale; start from the real rendered
+    // height so the drag doesn't jump, and switch to explicit sizing.
+    const startH = userSized
+      ? size.height
+      : (windowRef.current?.offsetHeight ?? size.height);
+    if (!userSized) {
+      setSize((prev) => ({ ...prev, height: startH }));
+      setUserSized(true);
+    }
     dragRef.current = {
       mode: "resize",
       pointerX: e.clientX,
       pointerY: e.clientY,
       startW: size.width,
-      startH: size.height,
+      startH,
     };
     setResizing(true);
   };
@@ -1986,6 +2027,7 @@ export default function Terminal() {
                     window.innerWidth,
                     window.innerHeight,
                   );
+                  setUserSized(true);
                   setSize(next);
                   setPosition((prev) =>
                     clampTerminalPosition(
@@ -2010,7 +2052,7 @@ export default function Terminal() {
 
         <div
           ref={scrollRef}
-          className="terminal-scroll flex-1 overflow-y-auto overflow-x-hidden px-3 py-2 text-sm sm:text-base leading-relaxed"
+          className="terminal-scroll flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-3 py-2 text-sm sm:text-base leading-relaxed"
           onClick={(e) => {
             const sel = window.getSelection()?.toString();
             if (!sel) inputRef.current?.focus();

@@ -175,6 +175,12 @@ div::-webkit-scrollbar {
 .terminal-scroll {
   scrollbar-width: thin;
   scrollbar-color: rgb(64, 64, 64) transparent;
+  /* Query container so inner layouts (help / whoami grids) respond to the
+     terminal window's own width, not the browser viewport. The terminal is a
+     resizable floating window, so viewport @media breakpoints would wrongly
+     force multi-column layouts into a narrow window. */
+  container-type: inline-size;
+  container-name: terminal;
 }
 
 .terminal-scroll::-webkit-scrollbar {
@@ -368,7 +374,7 @@ div::-webkit-scrollbar {
   border-bottom: 1px solid rgb(45, 45, 45);
 }
 
-@media (min-width: 520px) {
+@container terminal (min-width: 460px) {
   .whoami-summary {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
@@ -407,13 +413,13 @@ div::-webkit-scrollbar {
   padding: 0.65rem;
 }
 
-@media (min-width: 520px) {
+@container terminal (min-width: 460px) {
   .whoami-grid {
     columns: 2;
   }
 }
 
-@media (min-width: 820px) {
+@container terminal (min-width: 780px) {
   .whoami-grid {
     columns: 3;
   }
@@ -552,22 +558,25 @@ div::-webkit-scrollbar {
   overflow: hidden;
 }
 
+/* Masonry columns pack sections tightly: a shorter section never leaves a
+   half-empty row like a 2-col grid does. Column count follows the terminal
+   window width (container query), not the viewport. */
 .help-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.15rem 0.9rem;
+  columns: 1;
+  column-gap: 0.9rem;
   padding: 0.6rem 0.7rem;
 }
 
-@media (min-width: 520px) {
+@container terminal (min-width: 460px) {
   .help-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    columns: 2;
   }
 }
 
 .help-section {
   min-width: 0;
   padding: 0.25rem 0;
+  break-inside: avoid;
 }
 
 .help-section-title {
