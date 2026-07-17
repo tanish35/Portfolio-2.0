@@ -20,7 +20,8 @@ export function MusicResults({ results, query }) {
             ) : null}{" "}
             {t.isFull ? (
               <span className="music-badge music-badge-full">
-                full{t.durationSec ? ` · ${formatTime(t.durationSec)}` : ""}
+                {t.source === "deezer" ? "full · 320" : "full"}
+                {t.durationSec ? ` · ${formatTime(t.durationSec)}` : ""}
               </span>
             ) : (
               <span className="music-badge music-badge-preview">30s</span>

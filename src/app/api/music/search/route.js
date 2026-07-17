@@ -1,20 +1,8 @@
-/**
- * Free music search — no API key, no subscription.
- *
- *  - Audius   → full-length streamable tracks (open, decentralized catalog)
- *  - iTunes   → ~30s previews (broad mainstream catalog)
- *  - Deezer   → ~30s previews (fallback only)
- *
- * Results are merged: full tracks first, previews after. Each track carries
- * `isFull` + `durationSec` so the client can label full vs preview.
- *
- * GET /api/music/search?q=<query>
- */
-
 export const runtime = "nodejs";
 
 const AUDIUS_HOST = "https://discoveryprovider.audius.co";
 const AUDIUS_APP = "tanish-portfolio";
+const OCTAVE_HOST = "https://api.octavestreaming.com";
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -60,7 +48,10 @@ function sanitizeAudius(results) {
       artist: t.user.name,
       album: "",
       artwork:
-        t.artwork?.["150x150"] || t.artwork?.["480x480"] || t.artwork?.["1000x1000"] || null,
+        t.artwork?.["150x150"] ||
+        t.artwork?.["480x480"] ||
+        t.artwork?.["1000x1000"] ||
+        null,
       previewUrl: `${AUDIUS_HOST}/v1/tracks/${t.id}/stream?app_name=${AUDIUS_APP}`,
       externalUrl: t.permalink ? `https://audius.co${t.permalink}` : null,
       source: "audius",
@@ -101,7 +92,8 @@ function sanitizeDeezer(data) {
   const out = [];
   for (const t of data) {
     if (!t?.id || !t?.title || !t?.artist?.name) continue;
-    if (!t.preview) continue;
+    const previewUrl = t.preview || t.previewUrl;
+    if (!previewUrl) continue;
     out.push({
       id: `deezer:${t.id}`,
       uri: `deezer:track:${t.id}`,
@@ -109,11 +101,12 @@ function sanitizeDeezer(data) {
       artist: t.artist.name,
       album: t.album?.title || "",
       artwork: t.album?.cover_medium || t.album?.cover_small || null,
-      previewUrl: t.preview,
+      previewUrl,
       externalUrl: t.link || null,
       source: "deezer",
-      isFull: false,
-      durationSec: 30,
+      isFull: true,
+      durationSec: Number.isFinite(t.duration) ? t.duration : null,
+      canStreamFull: true,
     });
     if (out.length >= 10) break;
   }
@@ -132,7 +125,8 @@ async function searchAudius(query) {
 }
 
 async function searchItunes(query) {
-  const country = process.env.MUSIC_MARKET || process.env.SPOTIFY_MARKET || "IN";
+  const country =
+    process.env.MUSIC_MARKET || process.env.SPOTIFY_MARKET || "IN";
   const url = new URL("https://itunes.apple.com/search");
   url.searchParams.set("term", query);
   url.searchParams.set("media", "music");
@@ -147,14 +141,14 @@ async function searchItunes(query) {
 }
 
 async function searchDeezer(query) {
-  const url = new URL("https://api.deezer.com/search");
+  const url = new URL(`${OCTAVE_HOST}/api/search`);
   url.searchParams.set("q", query);
   url.searchParams.set("limit", "15");
 
   const res = await fetchWithTimeout(url.toString());
   if (!res.ok) throw new Error(`deezer_${res.status}`);
   const data = await res.json();
-  return sanitizeDeezer(data.data);
+  return sanitizeDeezer(data.tracks || data.data || []);
 }
 
 const norm = (s) =>
@@ -164,7 +158,6 @@ const norm = (s) =>
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
 
-/** Merge sources: full tracks first, drop preview duplicates of a full track. */
 function mergeTracks(full, previews) {
   const seen = new Set(full.map((t) => `${norm(t.name)}|${norm(t.artist)}`));
   const merged = [...full];
@@ -186,34 +179,23 @@ export async function GET(request) {
       return json({ error: "Invalid query. Provide 1–80 characters." }, 400);
     }
 
-    // Query Audius (full tracks) and iTunes (previews) in parallel.
-    const [audiusRes, itunesRes] = await Promise.allSettled([
+    const [audiusRes, deezerRes, itunesRes] = await Promise.allSettled([
       searchAudius(query),
+      searchDeezer(query),
       searchItunes(query),
     ]);
 
-    const full = audiusRes.status === "fulfilled" ? audiusRes.value : [];
-    const previews = itunesRes.status === "fulfilled" ? itunesRes.value : [];
+    const audius = audiusRes.status === "fulfilled" ? audiusRes.value : [];
+    const deezer = deezerRes.status === "fulfilled" ? deezerRes.value : [];
+    const itunes = itunesRes.status === "fulfilled" ? itunesRes.value : [];
 
-    let tracks = mergeTracks(full, previews);
-    let source = full.length
-      ? previews.length
-        ? "audius+itunes"
-        : "audius"
-      : "itunes";
+    const tracks = mergeTracks([...audius, ...deezer], itunes);
 
-    // Nothing from either primary source → try Deezer previews.
-    if (!tracks.length) {
-      try {
-        const deezer = await searchDeezer(query);
-        if (deezer.length) {
-          tracks = deezer;
-          source = "deezer";
-        }
-      } catch {
-        /* ignore */
-      }
-    }
+    const parts = [];
+    if (audius.length) parts.push("audius");
+    if (deezer.length) parts.push("deezer");
+    if (itunes.length) parts.push("itunes");
+    const source = parts.join("+") || "none";
 
     const anyFull = tracks.some((t) => t.isFull);
 
@@ -222,7 +204,7 @@ export async function GET(request) {
       tracks,
       source,
       note: anyFull
-        ? "full tracks (Audius) + 30s previews · free, no subscription"
+        ? "full tracks (Audius / Deezer · 320 kbps) + 30s previews · free, no subscription"
         : "30-second previews only · free catalog search (no subscription)",
     });
   } catch (e) {
