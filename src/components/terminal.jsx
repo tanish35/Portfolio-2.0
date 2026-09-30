@@ -525,9 +525,9 @@ export default function Terminal() {
         );
       }
 
-      const isDeezer =
-        typeof nextTrack?.id === "string" && nextTrack.id.startsWith("deezer:");
-      const useFull = isDeezer && nextTrack.canStreamFull !== false;
+      const useFull =
+        nextTrack?.canStreamFull === true &&
+        nextTrack.id.startsWith("monochrome:");
 
       setTrack({ ...nextTrack, isFull: useFull || Boolean(nextTrack.isFull) });
       setMusicStatus("loading");
@@ -553,8 +553,6 @@ export default function Terminal() {
           .catch(() => {
             setPlaying(false);
             setMusicStatus("press-play");
-            // If the full stream blocked autoplay, offer the 30s preview as
-            // an immediate fallback so the user can still hear something.
             if (useFull && nextTrack.previewUrl) {
               append(
                 [
@@ -582,7 +580,7 @@ export default function Terminal() {
         queryLabel ? `search match for: ${queryLabel}` : "loading…",
         `${isFull ? "playing" : "preview"} ${nextTrack.name} — ${nextTrack.artist}`,
         isFull
-          ? `[full track · 320 kbps${nextTrack.source ? ` · ${nextTrack.source}` : ""}]`
+          ? `[full track${nextTrack.source ? ` · ${nextTrack.source}` : ""}]`
           : "[30s free preview · not full track]",
       ]);
     },
@@ -763,7 +761,7 @@ export default function Terminal() {
               `${track.name} — ${track.artist}`,
               `${musicStatus || (playing ? "playing" : "paused")}  ${formatTime(elapsed)} / ${formatTime(duration)}`,
               track.isFull
-                ? "[full track · 320 kbps · streamed from /api/music/stream]"
+                ? `[full track · ${track.source || "stream"}]`
                 : "[30s free preview]",
               track.externalUrl || "",
             ].filter(Boolean),

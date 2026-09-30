@@ -2,7 +2,7 @@ export const runtime = "nodejs";
 
 const AUDIUS_HOST = "https://discoveryprovider.audius.co";
 const AUDIUS_APP = "tanish-portfolio";
-const OCTAVE_HOST = "https://api.octavestreaming.com";
+const MONOCHROME_HOST = "https://tracks.monochrome.st";
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -87,25 +87,22 @@ function sanitizeItunes(results) {
   return out;
 }
 
-function sanitizeDeezer(data) {
+function sanitizeMonochrome(data) {
   if (!Array.isArray(data)) return [];
   const out = [];
   for (const t of data) {
-    if (!t?.id || !t?.title || !t?.artist?.name) continue;
-    const previewUrl = t.preview || t.previewUrl;
-    if (!previewUrl) continue;
+    if (!/^\d+$/.test(String(t?.id)) || !t?.title || !t?.artistNames?.length) continue;
+    if (t.playable === false) continue;
     out.push({
-      id: `deezer:${t.id}`,
-      uri: `deezer:track:${t.id}`,
+      id: `monochrome:${t.id}`,
+      uri: `monochrome:track:${t.id}`,
       name: t.title,
-      artist: t.artist.name,
-      album: t.album?.title || "",
-      artwork: t.album?.cover_medium || t.album?.cover_small || null,
-      previewUrl,
-      externalUrl: t.link || null,
-      source: "deezer",
+      artist: t.artistNames.join(", "),
+      album: "",
+      artwork: t.artwork || null,
+      source: "monochrome",
       isFull: true,
-      durationSec: Number.isFinite(t.duration) ? t.duration : null,
+      durationSec: Number.isFinite(t.duration) ? t.duration / 1000 : null,
       canStreamFull: true,
     });
     if (out.length >= 10) break;
@@ -140,15 +137,14 @@ async function searchItunes(query) {
   return sanitizeItunes(data.results);
 }
 
-async function searchDeezer(query) {
-  const url = new URL(`${OCTAVE_HOST}/api/search`);
+async function searchMonochrome(query) {
+  const url = new URL(`${MONOCHROME_HOST}/search`);
   url.searchParams.set("q", query);
-  url.searchParams.set("limit", "15");
 
   const res = await fetchWithTimeout(url.toString());
-  if (!res.ok) throw new Error(`deezer_${res.status}`);
+  if (!res.ok) throw new Error(`monochrome_${res.status}`);
   const data = await res.json();
-  return sanitizeDeezer(data.tracks || data.data || []);
+  return sanitizeMonochrome(data.tracks || []);
 }
 
 const norm = (s) =>
@@ -179,21 +175,21 @@ export async function GET(request) {
       return json({ error: "Invalid query. Provide 1–80 characters." }, 400);
     }
 
-    const [audiusRes, deezerRes, itunesRes] = await Promise.allSettled([
+    const [monochromeRes, audiusRes, itunesRes] = await Promise.allSettled([
+      searchMonochrome(query),
       searchAudius(query),
-      searchDeezer(query),
       searchItunes(query),
     ]);
 
+    const monochrome = monochromeRes.status === "fulfilled" ? monochromeRes.value : [];
     const audius = audiusRes.status === "fulfilled" ? audiusRes.value : [];
-    const deezer = deezerRes.status === "fulfilled" ? deezerRes.value : [];
     const itunes = itunesRes.status === "fulfilled" ? itunesRes.value : [];
 
-    const tracks = mergeTracks([...audius, ...deezer], itunes);
+    const tracks = mergeTracks([...monochrome, ...audius], itunes);
 
     const parts = [];
+    if (monochrome.length) parts.push("monochrome");
     if (audius.length) parts.push("audius");
-    if (deezer.length) parts.push("deezer");
     if (itunes.length) parts.push("itunes");
     const source = parts.join("+") || "none";
 
@@ -204,7 +200,7 @@ export async function GET(request) {
       tracks,
       source,
       note: anyFull
-        ? "full tracks (Audius / Deezer · 320 kbps) + 30s previews · free, no subscription"
+        ? "full tracks (Monochrome / Audius) + 30s previews"
         : "30-second previews only · free catalog search (no subscription)",
     });
   } catch (e) {
