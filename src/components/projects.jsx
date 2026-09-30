@@ -11,7 +11,7 @@ const Projects = forwardRef(({ visible }, ref) => {
         <section
           id={`project-${index + 1}`}
           key={index}
-          className="relative bg-grid-white/[0.2] flex items-center justify-center"
+          className="relative bg-grid-white/[0.2] flex items-center justify-center py-16 lg:py-0"
         >
           <ProjectSummary
             tags={project.tags}

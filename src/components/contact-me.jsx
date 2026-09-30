@@ -3,14 +3,13 @@
 import React, { forwardRef } from "react";
 
 const ContactMe = forwardRef(({ visible }, ref) => {
-  console.info("ContactMe component loaded", visible, ref);
   return (
     <section
-      className="relative flex bg-dot-white/[0.2] items-center h-screen justify-center"
+      className="relative flex bg-dot-white/[0.2] items-center min-h-[100svh] lg:h-screen justify-center py-24 lg:py-0"
       id="contact"
       ref={ref}
     >
-      <div className="custom-shadow-50 rounded-[24px] min-w-[70%] z-10">
+      <div className="custom-shadow-50 rounded-[24px] w-full md:min-w-[70%] z-10">
         <div className="flex overflow-hidden bg-secondary-100 border-1 custom-shadow-b border-secondary-300 relative w-full rounded-t-[24px]">
           <img
             src="/svgs/contact-me-cover.svg"

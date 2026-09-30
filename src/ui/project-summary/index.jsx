@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/ui/button";
-import React, { forwardRef } from "react";
+import React from "react";
 import { Divider } from "@/ui/divider";
 import { deviceModels } from "@/ui/model/device-models";
 import { Transition } from "@/ui/transition";
@@ -19,8 +19,7 @@ const Model = lazy(() =>
   import("@/ui/model").then((module) => ({ default: module.Model }))
 );
 
-const ProjectSummary = forwardRef(
-  ({
+const ProjectSummary = ({
     visible: sectionVisible,
     sectionRef,
     index,
@@ -39,7 +38,6 @@ const ProjectSummary = forwardRef(
     const { width } = useWindowSize();
     const isHydrated = useHydrated();
     const isMobile = width <= media.tablet;
-    const phoneSizes = `(max-width: ${media.tablet}px) 30vw, 20vw`;
     const laptopSizes = `(max-width: ${media.tablet}px) 80vw, 40vw`;
 
     function handleModelLoad() {
@@ -66,35 +64,30 @@ const ProjectSummary = forwardRef(
 
     function renderDetails(visible) {
       return (
-        isHydrated &&
-        visible && (
           <AnimatePresence mode="wait">
             <motion.div
-              className="flex items-center"
+              className="flex items-center min-w-0 w-full"
               id="servcy-details"
               initial={{
                 opacity: 0,
                 x: -100,
               }}
-              animate={{
-                x: 0,
-                opacity: 1,
-              }}
+              animate={{ x: visible ? 0 : -100, opacity: visible ? 1 : 0 }}
               transition={{
                 duration: 0.5,
               }}
             >
               <div className="space-y-4">
-                <div className="flex">
-                  <Highlight className="font-gotham-bold text-teritiary-800 text-2xl md:text-4xl mr-2">
+                <div className="flex flex-col sm:flex-row sm:items-end gap-1 sm:gap-2">
+                  <Highlight className="font-gotham-bold text-teritiary-800 text-2xl md:text-4xl self-start max-w-full">
                     {title}
                   </Highlight>
-                  <span className="font-gotham-book text-lg md:text-2xl text-teritiary-400 self-end">
+                  <span className="font-gotham-book text-base md:text-2xl text-teritiary-400">
                     {caption}
                   </span>
                 </div>
                 <Divider collapsed={!visible} collapseDelay={1000} />
-                <p className="font-sans text-lg text-teritiary-300 max-sm:hidden">
+                <p className="font-sans text-sm leading-relaxed sm:text-lg text-teritiary-300">
                   {description}
                 </p>
                 {tags && (
@@ -125,16 +118,14 @@ const ProjectSummary = forwardRef(
               </div>
             </motion.div>
           </AnimatePresence>
-        )
       );
     }
 
     function renderPreview(visible) {
       return (
-        <div className="flex justify-center items-center relative justify-self-center h-full w-full">
-          {renderKatakana("laptop", visible)}
-          {!isMobile && (
-            <div
+        <div className="flex justify-center items-center relative justify-self-center h-[min(85vw,380px)] lg:h-full w-full">
+          {!isMobile && renderKatakana("laptop", visible)}
+          <div
               className={cn(
                 styles.model,
                 alternate ? "lg:left-[-20%]" : "lg:right-[-30%]"
@@ -151,8 +142,8 @@ const ProjectSummary = forwardRef(
                 <Suspense>
                   <Model
                     alt={model.alt}
-                    cameraPosition={{ x: 0, y: 0, z: 8 }}
-                    showDelay={700}
+                    cameraPosition={{ x: 0, y: 0, z: isMobile ? 7.5 : 8 }}
+                    showDelay={isMobile ? 0 : 700}
                     onLoad={handleModelLoad}
                     show={visible}
                     models={[
@@ -167,15 +158,14 @@ const ProjectSummary = forwardRef(
                   />
                 </Suspense>
               )}
-            </div>
-          )}
+          </div>
         </div>
       );
     }
 
     return (
       <div
-        className="flex justify-center items-center relative h-screen"
+        className="flex justify-center items-center relative w-full min-w-0 lg:h-screen"
         data-alternate={alternate}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
@@ -183,7 +173,7 @@ const ProjectSummary = forwardRef(
         tabIndex={-1}
         {...rest}
       >
-        <div className="lg:grid lg:grid-cols-2 flex flex-wrap">
+        <div className="w-full max-w-7xl min-w-0 lg:grid lg:grid-cols-2 flex flex-wrap gap-6 lg:gap-0">
           <Transition in={sectionVisible || focused}>
             {({ visible }) => (
               <>
@@ -205,7 +195,6 @@ const ProjectSummary = forwardRef(
         </div>
       </div>
     );
-  }
-);
+  };
 
 export default ProjectSummary;

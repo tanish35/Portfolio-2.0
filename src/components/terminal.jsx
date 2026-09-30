@@ -542,15 +542,14 @@ export default function Terminal() {
   useEffect(() => {
     setMounted(true);
     const prefs = loadUiPrefs();
-    const mobile = window.innerWidth < 768;
+    const mobile = window.innerWidth < 1024;
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     setIsMobile(mobile);
     setNotes(loadNotes());
 
     if (mobile) {
-      if (prefs?.minimized === false) setMinimized(false);
-      else setMinimized(true);
+      setMinimized(true);
     } else {
       const defaults = defaultTerminalSize(vw, vh);
       // Prefer fresh larger defaults over older compact saved sizes
@@ -589,7 +588,7 @@ export default function Terminal() {
     }
 
     const onResize = () => {
-      const m = window.innerWidth < 768;
+      const m = window.innerWidth < 1024;
       setIsMobile(m);
       const nextSize = clampTerminalSize(
         sizeRef.current.width,

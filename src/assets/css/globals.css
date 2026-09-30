@@ -32,7 +32,6 @@ main {
   scroll-snap-type: y mandatory;
 }
 
-
 button,
 a {
   cursor: url('../cursor/cursor-visit.svg') 10 10, auto !important;
@@ -48,6 +47,20 @@ section {
   @media screen and (max-width: 768px) {
     padding-left: 5%;
     padding-right: 5%;
+  }
+}
+
+@media (max-width: 1023px) {
+  main {
+    height: auto !important;
+    overflow-y: visible;
+    scroll-snap-type: none;
+  }
+
+  section {
+    height: auto;
+    overflow-y: visible;
+    scroll-margin-top: 6rem;
   }
 }
 

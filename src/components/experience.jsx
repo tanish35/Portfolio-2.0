@@ -5,14 +5,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { experienceData } from "@/data/experience";
 
 const Experience = forwardRef(({ visible }, ref) => {
-  console.info("Experience component loaded", visible, ref);
   return (
     <section
       ref={ref}
       id="experience"
-      className="relative bg-grid-white/[0.2] flex items-center justify-center"
+      className="relative bg-grid-white/[0.2] block lg:flex lg:items-center lg:justify-center py-20 lg:py-0"
     >
-      <div className="custom-shadow-50 rounded-[24px] max-w-[1200px]">
+      <div className="custom-shadow-50 rounded-[24px] max-w-[1200px] w-full mx-auto">
         <div className="flex items-center custom-shadow-b border-secondary-300 border-1 justify-center gap-x-2 py-3 bg-secondary-100 rounded-t-[24px]">
           <svg
             width="30"
@@ -38,17 +37,16 @@ const Experience = forwardRef(({ visible }, ref) => {
           </svg>
           <div>Work Timeline</div>
         </div>
-        <div className="custom-shadow-t min-h-60 max-h-[70vh] border-secondary-300 border-1 bg-secondary-100 rounded-b-[24px] relative px-5 py-2 overflow-y-scroll space-y-6">
-          <div className="flex absolute justify-end inset-0">
+        <div className="custom-shadow-t lg:min-h-60 lg:max-h-[70vh] border-secondary-300 border-1 bg-secondary-100 rounded-b-[24px] relative px-4 sm:px-5 py-5 lg:py-2 lg:overflow-y-scroll space-y-5 lg:space-y-6">
+          <div className="hidden sm:flex absolute justify-end inset-0">
             <div className="relative">
               <div className="journey-line absolute overflow-hidden z-0 top-0 bottom-0"></div>
             </div>
             <div className="overflow-hidden relative w-[50%]"></div>
           </div>
-          {visible &&
-            experienceData.map((exp, index) => (
+          {experienceData.map((exp, index) => (
               <AnimatePresence mode="wait" key={index}>
-                <div className="journey-stop grid grid-cols-5 items-center justify-center">
+                <div className="journey-stop grid grid-cols-1 sm:grid-cols-5 gap-2 sm:gap-0 items-center justify-center">
                   <motion.div
                     id={`exp-left-${index}`}
                     initial={{
@@ -62,7 +60,7 @@ const Experience = forwardRef(({ visible }, ref) => {
                     transition={{
                       duration: 1 * index,
                     }}
-                    className="bg-secondary-300 rounded-xl custom-shadow-200 col-span-2"
+                    className="bg-secondary-300 rounded-xl custom-shadow-200 sm:col-span-2 min-w-0"
                   >
                     <div className="font-semibold text-teritiary-600 custom-shadow-b px-6 py-3">
                       {exp.title}
@@ -70,7 +68,7 @@ const Experience = forwardRef(({ visible }, ref) => {
                         {exp.duration}
                       </div>
                     </div>
-                    <div className="text-sm text-teritiary-300 font-gotham-book custom-shadow-t px-6 py-3 max-sm:hidden">
+                    <div className="text-sm text-teritiary-300 font-gotham-book custom-shadow-t px-6 py-3 leading-relaxed">
                       {exp.description}
                     </div>
                   </motion.div>
@@ -85,7 +83,7 @@ const Experience = forwardRef(({ visible }, ref) => {
                     transition={{
                       duration: 1 * index,
                     }}
-                    className="col-span-1"
+                    className="hidden sm:block col-span-1"
                   >
                     <div className="flex justify-center items-center">
                       <div className="bg-secondary-700 p-2 rounded-full">
@@ -106,7 +104,7 @@ const Experience = forwardRef(({ visible }, ref) => {
                     transition={{
                       duration: 1 * index,
                     }}
-                    className="bg-secondary-300 py-3 px-6 rounded-xl custom-shadow-200 col-span-2"
+                    className="bg-secondary-300 py-3 px-6 rounded-xl custom-shadow-200 sm:col-span-2 min-w-0"
                   >
                     <div className="flex items-center gap-2">
                       <img
@@ -118,7 +116,7 @@ const Experience = forwardRef(({ visible }, ref) => {
                         {exp.company}
                       </div>
                     </div>
-                    <div className="text-sm text-teritiary-300 font-gotham-book max-sm:tex-txs max-sm:truncate">
+                    <div className="text-sm text-teritiary-300 font-gotham-book break-all">
                       {exp.companyUrl}
                     </div>
                   </motion.div>

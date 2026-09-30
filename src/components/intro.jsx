@@ -31,10 +31,10 @@ const Intro = forwardRef(({ scrollIndicatorHidden }, ref) => {
         transition={{
           duration: 0.5,
         }}
-        className="md:text-4xl text-2xl bg-dot-white/[0.2] relative font-bold flex items-center text-teritiary-300 justify-center md:justify-start md:pl-[8%] lg:pl-[12%]"
+        className="md:text-4xl text-2xl bg-dot-white/[0.2] relative font-bold flex items-center text-teritiary-300 justify-center md:justify-start md:pl-[8%] lg:pl-[12%] min-h-[100svh] pt-24 pb-16 md:py-0"
       >
         <div className="space-y-4">
-          <div className="flex gap-x-4 font-gotham-bold">
+          <div className="flex flex-col sm:flex-row gap-5 sm:gap-x-4 font-gotham-bold">
             <Image
               src="/svgs/logo.webp"
               width={150}
@@ -43,15 +43,15 @@ const Intro = forwardRef(({ scrollIndicatorHidden }, ref) => {
               priority
               fetchPriority="high"
               sizes="150px"
-              className="p-2 bg-secondary-200 rounded-xl custom-shadow-200"
+              className="p-2 bg-secondary-200 rounded-xl custom-shadow-200 w-24 h-24 sm:w-[150px] sm:h-[150px]"
             />
-            <div className="self-end space-y-1 cursor-pointer p-2 h-full w-full">
+            <div className="self-end space-y-2 cursor-pointer sm:p-2 h-full w-full min-w-0 text-[clamp(1.55rem,7vw,2.25rem)] md:text-4xl">
               <DecoderText text="Tanish Majumdar" delay={500} />
               <div className="font-sans text-base flex gap-x-1 items-center">
                 <IconMapPin className="size-4" />
                 <DecoderText text="Mumbai" delay={500} />
               </div>
-              <div className="flex gap-x-2 items-center text-teritiary-400 text-base font-sans">
+              <div className="flex gap-x-5 sm:gap-x-2 items-center text-teritiary-400 text-base font-sans pt-2 sm:pt-0">
                 <LinkPreview
                   url="https://www.linkedin.com/in/tanish34/"
                   className="font-bold"
@@ -79,7 +79,7 @@ const Intro = forwardRef(({ scrollIndicatorHidden }, ref) => {
               </div>
             </div>
           </div>
-          <div className="text-teritiary-800 text-5xl font-gotham-book max-sm:hidden">
+          <div className="text-teritiary-800 text-[clamp(1.9rem,8vw,3rem)] leading-tight md:text-5xl font-gotham-book pt-3 sm:pt-0">
             Building software <br className="md:hidden" />
             <Highlight className="text-black dark:text-white">
               one line at a time

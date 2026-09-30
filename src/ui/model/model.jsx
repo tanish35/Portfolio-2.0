@@ -298,9 +298,9 @@ export const Model = ({
     renderer.current.render(scene.current, camera.current);
   }, [blurShadow, rotationX, rotationY]);
 
-  // Handle mouse move animation
+  // Tilt with a mouse or touch pointer.
   useEffect(() => {
-    const onMouseMove = throttle((event) => {
+    const onPointerMove = throttle((event) => {
       const { innerWidth, innerHeight } = window;
 
       const position = {
@@ -313,11 +313,11 @@ export const Model = ({
     }, 100);
 
     if (isInViewport && !reduceMotion) {
-      window.addEventListener("mousemove", onMouseMove);
+      window.addEventListener("pointermove", onPointerMove);
     }
 
     return () => {
-      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("pointermove", onPointerMove);
     };
   }, [isInViewport, reduceMotion, rotationX, rotationY]);
 

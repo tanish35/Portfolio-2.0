@@ -33,6 +33,7 @@ export const FloatingNav = ({ navItems, className }) => {
           <button
             key={`link=${idx}`}
             type="button"
+            aria-label={navItem.name}
             onClick={() => {
               if (navItem.link.startsWith("/")) window.location = navItem.link;
               else {
