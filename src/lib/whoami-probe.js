@@ -171,7 +171,6 @@ export function collectLocalProbe() {
   const conn = nav.connection || nav.mozConnection || nav.webkitConnection;
   const gpu = getGpuInfo();
   const intl = Intl.DateTimeFormat().resolvedOptions();
-  const perfMem = performance.memory;
 
   return {
     title: "whoamireally",
@@ -189,31 +188,19 @@ export function collectLocalProbe() {
       section("browser", "Browser", "◎", [
         { label: "Family", value: parseBrowserFamily(nav.userAgent) },
         { label: "User-Agent", value: nav.userAgent },
-        { label: "Vendor", value: nav.vendor },
         { label: "Platform", value: nav.platform },
-        { label: "Product", value: nav.product },
         { label: "WebDriver", value: String(nav.webdriver ?? false) },
-        { label: "PDF viewer", value: String(nav.pdfViewerEnabled ?? "—") },
-        { label: "Cookies", value: String(nav.cookieEnabled) },
-        { label: "DNT", value: nav.doNotTrack ?? nav.msDoNotTrack ?? "—" },
       ]),
       section("locale", "Locale", "🌐", [
         { label: "Language", value: nav.language },
-        { label: "Languages", value: (nav.languages || []).join(", ") },
         { label: "Timezone", value: intl.timeZone },
-        { label: "Locale", value: intl.locale },
-        { label: "Calendar", value: intl.calendar },
-        { label: "Numbering", value: intl.numberingSystem },
         { label: "UTC offset", value: `${new Date().getTimezoneOffset()} min` },
       ]),
       section("display", "Display", "▣", [
         { label: "Viewport", value: `${window.innerWidth}×${window.innerHeight}` },
-        { label: "Outer", value: `${window.outerWidth}×${window.outerHeight}` },
         { label: "Screen", value: `${screen.width}×${screen.height}` },
-        { label: "Available", value: `${screen.availWidth}×${screen.availHeight}` },
         { label: "Pixel ratio", value: window.devicePixelRatio },
         { label: "Color depth", value: screen.colorDepth },
-        { label: "Orientation", value: screen.orientation?.type },
       ]),
       section("prefs", "Media prefs", "◐", [
         {
@@ -232,8 +219,6 @@ export function collectLocalProbe() {
               ? "coarse"
               : "none",
         },
-        { label: "Hover", value: mq("(hover: hover)") ? "hover" : "none" },
-        { label: "HDR", value: mq("(dynamic-range: high)") ? "high" : "standard" },
       ]),
       section("hardware", "Hardware", "⚙", [
         { label: "CPUs", value: nav.hardwareConcurrency },
@@ -242,51 +227,16 @@ export function collectLocalProbe() {
           value:
             nav.deviceMemory != null ? `${nav.deviceMemory} GB (est.)` : "—",
         },
-        { label: "Touch points", value: nav.maxTouchPoints ?? 0 },
-        {
-          label: "JS heap",
-          value: perfMem
-            ? `${Math.round(perfMem.usedJSHeapSize / 1048576)} / ${Math.round(perfMem.jsHeapSizeLimit / 1048576)} MB`
-            : "—",
-        },
-        { label: "GPU vendor", value: gpu.vendor },
-        { label: "GPU renderer", value: gpu.renderer },
-        { label: "WebGL", value: gpu.version },
-        { label: "Max texture", value: gpu.maxTex },
+        { label: "GPU", value: gpu.renderer },
         { label: "Canvas hash", value: getCanvasFingerprint() },
       ]),
-      section("network-local", "Network (local)", "⌁", [
+      section("network-local", "Network", "⌁", [
         { label: "Online", value: nav.onLine ? "yes" : "no" },
         { label: "Connection", value: conn?.effectiveType },
         {
           label: "Downlink",
           value: conn?.downlink != null ? `${conn.downlink} Mbps` : "—",
         },
-        { label: "RTT", value: conn?.rtt != null ? `${conn.rtt} ms` : "—" },
-        {
-          label: "Save-Data",
-          value: conn ? (conn.saveData ? "on" : "off") : "—",
-        },
-      ]),
-      section("features", "Features", "✦", [
-        { label: "Service Worker", value: "serviceWorker" in nav ? "yes" : "no" },
-        {
-          label: "WebRTC",
-          value: !!(window.RTCPeerConnection || window.webkitRTCPeerConnection)
-            ? "yes"
-            : "no",
-        },
-        { label: "WebAssembly", value: typeof WebAssembly !== "undefined" ? "yes" : "no" },
-        { label: "WebGL2", value: !!document.createElement("canvas").getContext("webgl2") ? "yes" : "no" },
-        { label: "Bluetooth", value: nav.bluetooth ? "yes" : "no" },
-        { label: "USB", value: nav.usb ? "yes" : "no" },
-        { label: "Geolocation", value: nav.geolocation ? "yes" : "no" },
-        {
-          label: "Notifications",
-          value: "Notification" in window ? Notification.permission : "—",
-        },
-        { label: "IndexedDB", value: window.indexedDB ? "yes" : "no" },
-        { label: "Plugins", value: nav.plugins?.length ?? 0 },
       ]),
     ],
   };
@@ -421,17 +371,7 @@ async function collectFingerprintSection() {
       },
       { label: "Library", value: result.version },
     ];
-    const keys = [
-      "platform",
-      "timezone",
-      "languages",
-      "colorDepth",
-      "deviceMemory",
-      "screenResolution",
-      "touchSupport",
-      "webglVendorAndRenderer",
-      "adBlock",
-    ];
+    const keys = ["screenResolution", "webglVendorAndRenderer", "adBlock"];
     for (const key of keys) {
       const comp = result.components?.[key];
       if (!comp) continue;
@@ -472,23 +412,12 @@ async function collectNetworkSections() {
         sections.push(
           section(`net-${ep.name}`, `Public IP · ${ep.name}`, "⬡", [
             { label: "IP", value: d.ip },
-            { label: "City", value: d.city },
-            { label: "Region", value: d.region },
-            { label: "Country", value: d.country },
-            { label: "Postal", value: d.postal },
             {
-              label: "Coords",
-              value:
-                d.latitude != null ? `${d.latitude}, ${d.longitude}` : "—",
+              label: "Location",
+              value: [d.city, d.region, d.country].filter(Boolean).join(", "),
             },
-            { label: "Org", value: d.org },
-            { label: "ISP", value: d.isp },
+            { label: "Org", value: d.org || d.isp },
             { label: "ASN", value: d.asn },
-            { label: "Timezone", value: d.timezone },
-            { label: "Currency", value: d.currency },
-            { label: "Calling code", value: d.callingCode },
-            { label: "Flag", value: d.flag },
-            { label: "Type", value: d.type },
           ]),
         );
       } catch {

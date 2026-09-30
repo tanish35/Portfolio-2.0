@@ -615,11 +615,12 @@ export function clampTerminalSize(width, height, vw, vh) {
   return { width: Math.round(w), height: Math.round(h) };
 }
 
-/** Default: at least half the viewport width, tall right-panel feel. */
+/** Default: a compact square window that sits in the bottom-right corner. */
 export function defaultTerminalSize(vw, vh) {
-  const width = Math.round(Math.max(vw * 0.5, Math.min(vw - 32, vw * 0.52)));
-  const height = Math.round(Math.min(vh - 48, Math.max(vh * 0.72, 480)));
-  return clampTerminalSize(width, height, vw, vh);
+  const side = Math.round(
+    Math.min(Math.max(Math.min(vw, vh) * 0.5, 380), 560, vw - 32, vh - 48),
+  );
+  return clampTerminalSize(side, side, vw, vh);
 }
 
 export function clampTerminalPosition(x, y, width, height, vw, vh) {
@@ -631,10 +632,10 @@ export function clampTerminalPosition(x, y, width, height, vw, vh) {
   };
 }
 
-/** Pin to the right half by default. */
+/** Pin to the bottom-right corner by default. */
 export function defaultTerminalPosition(vw, vh, width, height) {
   const margin = 16;
   const x = Math.max(margin, vw - width - margin);
-  const y = Math.max(margin, Math.round((vh - height) / 2));
+  const y = Math.max(margin, vh - height - margin);
   return clampTerminalPosition(x, y, width, height, vw, vh);
 }

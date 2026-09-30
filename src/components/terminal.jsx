@@ -3,7 +3,27 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { projects } from "@/data/projects";
 import { experienceData } from "@/data/experience";
-import { AUTHOR, ROLE, SITE_HOST } from "@/lib/site";
+import { ABOUT_BIO, RESUME_URL } from "@/components/terminal/constants";
+import {
+  commandEntry,
+  formatTime,
+  helpEntry,
+  list,
+  makeId,
+  systemEntry,
+  text,
+} from "@/components/terminal/entries";
+import {
+  loadNotes,
+  loadUiPrefs,
+  openExternal,
+  saveNotes,
+  saveUiPrefs,
+  scrollToHash,
+} from "@/components/terminal/helpers";
+import { pingHost, scanHost } from "@/lib/terminal-net";
+import { PreviewPlayer } from "@/components/terminal/PreviewPlayer";
+import { TranscriptEntry } from "@/components/terminal/TranscriptEntry";
 import {
   isPlayIndex,
   parsePlayQuery,
@@ -24,7 +44,6 @@ import {
   jokeText,
   manPage,
   matrixFrames,
-  pingLines,
   skillsLines,
   trainFrames,
 } from "@/lib/terminal-fun";
@@ -58,417 +77,6 @@ import {
   suggestProjects,
 } from "@/lib/terminal-core";
 
-const RESUME_URL = "/files/resume.pdf";
-
-const SYSTEM_INFO = [
-  { label: "Role", value: ROLE },
-  { label: "Location", value: "Mumbai, India" },
-  { label: "Site", value: SITE_HOST },
-  { label: "Shell", value: "portfolio-sh" },
-  { label: "UI", value: "Next.js + React" },
-  { label: "GitHub", value: "tanish35" },
-  { label: "LinkedIn", value: "tanish34" },
-  { label: "Theme", value: "one line at a time" },
-];
-
-const THEME_SWATCHES = ["#e63718", "#100f0d", "#fafafa", "#999999", "#e94b30"];
-
-const ABOUT_BIO = `${AUTHOR} — ${ROLE} based in Mumbai. Building software one line at a time.`;
-
-const HELP_LINES = [
-  "Available commands:",
-  "  help                 Show this command list",
-  "  ls [-al] [path]      List virtual filesystem entries",
-  "  cd <path|project>    Change directory or open project link",
-  "  cat <path|*>         Print virtual text file(s)",
-  "  rm [-rf] <path>      Remove browser-local notes only",
-  "  open <app|file|proj> Open allowlisted app, file, or project",
-  "  vim <file>           Edit a notes file inline",
-  "  neofetch             Portfolio system card",
-  "  pwd                  Print virtual working directory",
-  "  whoami / about       Short bio",
-  "  whoamireally         Full browser fingerprint + public IP",
-  "  clear                Clear transcript",
-  "  ifconfig             Browser connectivity snapshot",
-  "  nmap <host>          Simulated scan (portfolio hosts + labeled sim)",
-  "  projects             List projects and scroll",
-  "  experience           Scroll to experience",
-  "  contact              Scroll to contact",
-  "  resume               Open resume PDF",
-  "  play <song>          Search catalog (shows results)",
-  "  search <query>       Same as play — list matches only",
-  "  track <n>            Play result # from last search",
-  "  results              Reprint last music search results",
-  "  pause / continue     Control preview playback",
-  "  stop / now           Stop preview or show now-playing",
-  "",
-  "Fun / easter eggs:",
-  "  fortune · joke · cowsay [msg] · skills · hire",
-  "  matrix · sl · hack · ping [host] · weather",
-  "  flip · dice · coffee · banner · history · exit",
-  "  man <cmd> · hello · please · sudo <anything>",
-];
-
-function makeId() {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-}
-
-function text(lines, extra = {}) {
-  return {
-    id: makeId(),
-    type: "text",
-    lines: Array.isArray(lines) ? lines : [lines],
-    ...extra,
-  };
-}
-
-function list(items) {
-  return { id: makeId(), type: "list", items };
-}
-
-function systemEntry() {
-  return { id: makeId(), type: "system" };
-}
-
-function commandEntry(cmd) {
-  return { id: makeId(), type: "command", command: cmd };
-}
-
-function openExternal(url) {
-  window.open(url, "_blank", "noopener,noreferrer");
-}
-
-function scrollToHash(hash) {
-  const el = document.querySelector(hash);
-  if (el) {
-    el.scrollIntoView({ behavior: "smooth" });
-    history.pushState(null, "", hash);
-  }
-}
-
-function loadNotes() {
-  try {
-    const raw = localStorage.getItem(FS_STORAGE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === "object" ? parsed : {};
-  } catch {
-    return {};
-  }
-}
-
-function saveNotes(notes) {
-  try {
-    localStorage.setItem(FS_STORAGE_KEY, JSON.stringify(notes));
-  } catch {
-    /* quota */
-  }
-}
-
-function loadUiPrefs() {
-  try {
-    const raw = localStorage.getItem(UI_STORAGE_KEY);
-    if (!raw) return null;
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
-}
-
-function saveUiPrefs(prefs) {
-  try {
-    localStorage.setItem(UI_STORAGE_KEY, JSON.stringify(prefs));
-  } catch {
-    /* ignore */
-  }
-}
-
-function simulatedNmap(host) {
-  const h = (host || "").trim() || "unknown";
-  const lower = h.toLowerCase();
-  const portfolioish =
-    NMAP_HOSTS.includes(lower) ||
-    lower.includes("tanish") ||
-    lower === "127.0.0.1" ||
-    lower === "localhost";
-
-  const ports = portfolioish
-    ? [
-        "PORT     STATE    SERVICE",
-        "22/tcp   closed   ssh",
-        "80/tcp   open     http",
-        "443/tcp  open     https",
-        "3000/tcp filtered next-dev",
-      ]
-    : [
-        "PORT     STATE    SERVICE",
-        "22/tcp   filtered ssh",
-        "80/tcp   filtered http",
-        "443/tcp  filtered https",
-      ];
-
-  return [
-    `Starting simulated Nmap 7.94 ( portfolio-sh ) at ${new Date().toISOString()}`,
-    `Nmap scan report for ${h}`,
-    "Host is up (0.0042s latency) — simulated.",
-    ...ports,
-    "",
-    "NOTE: Simulated browser-local output only. No real network scan was performed.",
-  ];
-}
-
-const TANISH_ASCII = `
-████████╗ █████╗ ███╗   ██╗██╗███████╗██╗  ██╗
-╚══██╔══╝██╔══██╗████╗  ██║██║██╔════╝██║  ██║
-   ██║   ███████║██╔██╗ ██║██║███████╗███████║
-   ██║   ██╔══██║██║╚██╗██║██║╚════██║██╔══██║
-   ██║   ██║  ██║██║ ╚████║██║███████║██║  ██║
-   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚══════╝╚═╝  ╚═╝
-`.trim();
-
-function TanishAscii() {
-  return (
-    <pre
-      className="text-primary-200 font-ipa-gothic text-[8px] sm:text-[9px] md:text-[10px] leading-[1.15] select-none whitespace-pre overflow-hidden shrink-0"
-      aria-hidden="true"
-    >
-      {TANISH_ASCII}
-    </pre>
-  );
-}
-
-function SystemCard() {
-  return (
-    <div className="min-w-0">
-      <div className="text-teritiary-700 font-medium">tanish@portfolio</div>
-      <div className="text-teritiary-200 mb-2">----------------</div>
-      <div className="space-y-0.5">
-        {SYSTEM_INFO.map((row) => (
-          <div
-            key={row.label}
-            className="flex gap-x-2 min-w-0 text-[13px] sm:text-sm"
-          >
-            <span className="text-primary-200 w-[4.8rem] shrink-0">
-              {row.label}
-            </span>
-            <span className="text-teritiary-600 truncate">{row.value}</span>
-          </div>
-        ))}
-      </div>
-      <div className="mt-2 flex gap-1" aria-hidden="true">
-        {THEME_SWATCHES.map((c) => (
-          <span
-            key={c}
-            className="size-2.5 rounded-sm border border-secondary-600"
-            style={{ backgroundColor: c }}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function WhoamiReport({ report }) {
-  if (!report) return null;
-  return (
-    <div className="whoami-report">
-      <div className="whoami-hero">
-        <div className="whoami-hero-mark" aria-hidden="true">
-          ?
-        </div>
-        <div className="min-w-0">
-          <div className="whoami-title">{report.title || "whoamireally"}</div>
-          <div className="whoami-subtitle">
-            {report.subtitle || "Browser session probe"}
-          </div>
-        </div>
-      </div>
-
-      {report.summary?.length > 0 && (
-        <div className="whoami-summary">
-          {report.summary.map((item) => (
-            <div key={item.label} className="whoami-chip">
-              <span className="whoami-chip-label">{item.label}</span>
-              <span className="whoami-chip-value">{item.value}</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div className="whoami-grid">
-        {(report.sections || []).map((sec) => (
-          <section key={sec.id || sec.title} className="whoami-card">
-            <header className="whoami-card-head">
-              <span className="whoami-card-icon" aria-hidden="true">
-                {sec.icon || "·"}
-              </span>
-              <h3 className="whoami-card-title">{sec.title}</h3>
-            </header>
-            <dl className="whoami-rows">
-              {(sec.rows || []).map((row) => (
-                <div key={`${sec.title}-${row.label}`} className="whoami-row">
-                  <dt>{row.label}</dt>
-                  <dd title={row.value}>{row.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </section>
-        ))}
-      </div>
-
-      {report.footer && <p className="whoami-footer">{report.footer}</p>}
-      {report.loading && (
-        <p className="whoami-loading">Gathering extended signals…</p>
-      )}
-    </div>
-  );
-}
-
-function MusicResults({ results, query }) {
-  if (!results?.length) return null;
-  return (
-    <div className="music-results">
-      <div className="music-results-head">
-        Results{query ? ` for “${query}”` : ""} · 30s previews
-      </div>
-      <ol className="music-results-list">
-        {results.map((t, i) => (
-          <li key={t.id}>
-            <span className="text-primary-200">{i + 1}.</span>{" "}
-            <span className="text-teritiary-600">{t.name}</span>
-            <span className="text-teritiary-300"> — {t.artist}</span>
-            {t.album ? (
-              <span className="text-teritiary-200 text-xs"> · {t.album}</span>
-            ) : null}
-          </li>
-        ))}
-      </ol>
-      <div className="text-teritiary-200 text-xs mt-1">
-        Enter track &lt;n&gt; to play a preview (e.g. track 1)
-      </div>
-    </div>
-  );
-}
-
-function TranscriptEntry({ entry, editorProps }) {
-  if (entry.type === "command") {
-    return (
-      <div className="flex gap-x-2">
-        <span className="shrink-0">
-          <span className="text-primary-200">tanish</span>
-          <span className="text-teritiary-300"> ~ </span>
-          <span className="text-primary-300">❯</span>
-        </span>
-        <span className="text-teritiary-600 break-all">{entry.command}</span>
-      </div>
-    );
-  }
-
-  if (entry.type === "system") {
-    return (
-      <div className="grid grid-cols-1 min-[480px]:grid-cols-[auto_minmax(0,1fr)] gap-3 sm:gap-5 items-start">
-        <TanishAscii />
-        <SystemCard />
-      </div>
-    );
-  }
-
-  if (entry.type === "whoami") {
-    return <WhoamiReport report={entry.report} />;
-  }
-
-  if (entry.type === "music-results") {
-    return <MusicResults results={entry.results} query={entry.query} />;
-  }
-
-  if (entry.type === "anim") {
-    return (
-      <pre
-        className={`terminal-anim font-ipa-gothic text-[11px] sm:text-xs leading-snug whitespace-pre-wrap select-none ${
-          entry.variant === "matrix" ? "terminal-anim-matrix" : "terminal-anim-accent"
-        }`}
-        aria-live="polite"
-      >
-        {entry.frame}
-      </pre>
-    );
-  }
-
-  if (entry.type === "sudo-anim") {
-    return (
-      <pre
-        className="sudo-anim text-primary-200 font-ipa-gothic text-[11px] sm:text-xs leading-snug whitespace-pre-wrap select-none"
-        aria-live="polite"
-      >
-        {entry.frame}
-      </pre>
-    );
-  }
-
-  if (entry.type === "list") {
-    return (
-      <ul className="list-none pl-0 space-y-0.5 text-teritiary-500">
-        {entry.items.map((item) => (
-          <li key={item} className="break-words">
-            {item}
-          </li>
-        ))}
-      </ul>
-    );
-  }
-
-  if (entry.type === "editor" && editorProps) {
-    return (
-      <div className="border border-secondary-600 rounded-lg overflow-hidden bg-[#141210]">
-        <div className="px-2 py-1 text-xs text-teritiary-300 border-b border-secondary-600 flex justify-between gap-2">
-          <span>
-            {entry.path}{" "}
-            <span className="text-primary-200">[portfolio-vim]</span>
-          </span>
-          <span
-            className={
-              editorProps.dirty ? "text-primary-300" : "text-teritiary-200"
-            }
-          >
-            {editorProps.dirty ? "modified" : "saved"}
-          </span>
-        </div>
-        <textarea
-          value={editorProps.value}
-          onChange={(e) => editorProps.onChange(e.target.value)}
-          onKeyDown={editorProps.onKeyDown}
-          className="w-full min-h-[140px] bg-transparent text-teritiary-600 font-ipa-gothic text-base p-2 outline-none resize-y"
-          spellCheck={false}
-          aria-label={`Editing ${entry.path}`}
-        />
-        <div className="px-2 py-1 text-[11px] text-teritiary-200 border-t border-secondary-600">
-          Ctrl/Cmd+S save · Esc exit
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-0.5 text-teritiary-500">
-      {(entry.lines || []).map((line, i) => (
-        <div
-          key={`${entry.id}-${i}`}
-          className="whitespace-pre-wrap break-words"
-        >
-          {line}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function formatTime(sec) {
-  if (!Number.isFinite(sec) || sec < 0) return "0:00";
-  const m = Math.floor(sec / 60);
-  const s = Math.floor(sec % 60);
-  return `${m}:${String(s).padStart(2, "0")}`;
-}
-
 export default function Terminal() {
   const projectTargets = useMemo(() => buildProjectTargets(projects), []);
   const projectSlugs = useMemo(() => projects.map((p) => p.slug), []);
@@ -481,6 +89,9 @@ export default function Terminal() {
   const [sizeOpen, setSizeOpen] = useState(false);
   const [resizing, setResizing] = useState(false);
   const [dragging, setDragging] = useState(false);
+  // When false, the window height hugs its content (no dead space under short
+  // output). Flips to true once the user drags/sets a height explicitly.
+  const [userSized, setUserSized] = useState(false);
 
   const [cwd, setCwd] = useState(VIRTUAL_ROOT);
   const [notes, setNotes] = useState({});
@@ -552,17 +163,21 @@ export default function Terminal() {
       setMinimized(true);
     } else {
       const defaults = defaultTerminalSize(vw, vh);
-      // Prefer fresh larger defaults over older compact saved sizes
+      // Only restore a saved size/position if the user explicitly resized
+      // before; otherwise use the square bottom-right default.
       const savedW = prefs?.width;
       const savedH = prefs?.height;
       const useSavedSize =
+        prefs?.manualSize === true &&
         Number.isFinite(savedW) &&
-        Number.isFinite(savedH) &&
-        savedW >= vw * 0.45;
+        Number.isFinite(savedH);
       const clamped = useSavedSize
         ? clampTerminalSize(savedW, savedH, vw, vh)
         : defaults;
       setSize(clamped);
+      // Auto-fit height by default; only honor a saved explicit height if the
+      // user had manually resized before.
+      setUserSized(useSavedSize && prefs?.manualSize === true);
 
       if (
         Number.isFinite(prefs?.x) &&
@@ -621,8 +236,9 @@ export default function Terminal() {
       x: position.x,
       y: position.y,
       minimized,
+      manualSize: userSized,
     });
-  }, [size, position, minimized, mounted]);
+  }, [size, position, minimized, mounted, userSized]);
 
   // Pointer move (title bar) + resize (bottom-right grip)
   useEffect(() => {
@@ -634,8 +250,8 @@ export default function Terminal() {
           clampTerminalPosition(
             drag.startX + (e.clientX - drag.pointerX),
             drag.startY + (e.clientY - drag.pointerY),
-            sizeRef.current.width,
-            sizeRef.current.height,
+            windowRef.current?.offsetWidth ?? sizeRef.current.width,
+            windowRef.current?.offsetHeight ?? sizeRef.current.height,
             window.innerWidth,
             window.innerHeight,
           ),
@@ -752,27 +368,30 @@ export default function Terminal() {
     };
   }, []);
 
-  const playAnimFrames = useCallback((frames, { variant = "accent", interval = 120 } = {}) => {
-    const entryId = makeId();
-    const list = Array.isArray(frames) ? frames : [String(frames)];
-    append(
-      [{ id: entryId, type: "anim", variant, frame: list[0] }],
-      "animation",
-    );
-    animTimersRef.current.forEach(clearTimeout);
-    animTimersRef.current = [];
-    list.forEach((frame, i) => {
-      if (i === 0) return;
-      const t = setTimeout(() => {
-        setTranscript((prev) =>
-          prev.map((e) =>
-            e.id === entryId && e.type === "anim" ? { ...e, frame } : e,
-          ),
-        );
-      }, i * interval);
-      animTimersRef.current.push(t);
-    });
-  }, [append]);
+  const playAnimFrames = useCallback(
+    (frames, { variant = "accent", interval = 120 } = {}) => {
+      const entryId = makeId();
+      const list = Array.isArray(frames) ? frames : [String(frames)];
+      append(
+        [{ id: entryId, type: "anim", variant, frame: list[0] }],
+        "animation",
+      );
+      animTimersRef.current.forEach(clearTimeout);
+      animTimersRef.current = [];
+      list.forEach((frame, i) => {
+        if (i === 0) return;
+        const t = setTimeout(() => {
+          setTranscript((prev) =>
+            prev.map((e) =>
+              e.id === entryId && e.type === "anim" ? { ...e, frame } : e,
+            ),
+          );
+        }, i * interval);
+        animTimersRef.current.push(t);
+      });
+    },
+    [append],
+  );
 
   const runSudoPrank = useCallback(
     (raw) => {
@@ -881,15 +500,18 @@ export default function Terminal() {
         sudoTimersRef.current.push(t);
       });
 
-      const closeT = setTimeout(() => {
-        setTranscript([]);
-        setHistory([]);
-        setHistoryIndex(-1);
-        setInput("");
-        setSudoBusy(false);
-        setMinimized(true);
-        setLiveMessage("Terminal closed");
-      }, frames.length * 480 + 700);
+      const closeT = setTimeout(
+        () => {
+          setTranscript([]);
+          setHistory([]);
+          setHistoryIndex(-1);
+          setInput("");
+          setSudoBusy(false);
+          setMinimized(true);
+          setLiveMessage("Terminal closed");
+        },
+        frames.length * 480 + 700,
+      );
       sudoTimersRef.current.push(closeT);
     },
     [sudoBusy],
@@ -897,22 +519,30 @@ export default function Terminal() {
 
   const loadAndPlayTrack = useCallback(
     (nextTrack, queryLabel) => {
-      if (!nextTrack?.previewUrl) {
+      if (!nextTrack?.previewUrl && !nextTrack?.canStreamFull) {
         return text(
           `No preview available for ${nextTrack?.name || "track"} — ${nextTrack?.artist || ""}`.trim(),
         );
       }
 
-      setTrack(nextTrack);
+      const isDeezer =
+        typeof nextTrack?.id === "string" && nextTrack.id.startsWith("deezer:");
+      const useFull = isDeezer && nextTrack.canStreamFull !== false;
+
+      setTrack({ ...nextTrack, isFull: useFull || Boolean(nextTrack.isFull) });
       setMusicStatus("loading");
       setPlaying(false);
       setElapsed(0);
       setDuration(0);
 
+      const playSrc = useFull
+        ? `/api/music/stream?id=${encodeURIComponent(nextTrack.id)}`
+        : nextTrack.previewUrl;
+
       requestAnimationFrame(() => {
         const audio = audioRef.current;
         if (!audio) return;
-        audio.src = nextTrack.previewUrl;
+        audio.src = playSrc;
         audio.load();
         audio
           .play()
@@ -923,21 +553,37 @@ export default function Terminal() {
           .catch(() => {
             setPlaying(false);
             setMusicStatus("press-play");
-            append(
-              [
-                text(
-                  "Preview loaded — press ▶ in the player if autoplay was blocked.",
-                ),
-              ],
-              "Press play",
-            );
+            // If the full stream blocked autoplay, offer the 30s preview as
+            // an immediate fallback so the user can still hear something.
+            if (useFull && nextTrack.previewUrl) {
+              append(
+                [
+                  text(
+                    "Full track loaded — press ▶ in the player if autoplay was blocked.",
+                  ),
+                ],
+                "Press play",
+              );
+            } else {
+              append(
+                [
+                  text(
+                    "Preview loaded — press ▶ in the player if autoplay was blocked.",
+                  ),
+                ],
+                "Press play",
+              );
+            }
           });
       });
 
+      const isFull = useFull || Boolean(nextTrack.isFull);
       return text([
-        queryLabel ? `search match for: ${queryLabel}` : "loading preview…",
-        `preview ${nextTrack.name} — ${nextTrack.artist}`,
-        "[30s free preview · not full track]",
+        queryLabel ? `search match for: ${queryLabel}` : "loading…",
+        `${isFull ? "playing" : "preview"} ${nextTrack.name} — ${nextTrack.artist}`,
+        isFull
+          ? `[full track · 320 kbps${nextTrack.source ? ` · ${nextTrack.source}` : ""}]`
+          : "[30s free preview · not full track]",
       ]);
     },
     [append],
@@ -995,9 +641,8 @@ export default function Terminal() {
               query: q,
             },
             text([
-              data.source
-                ? `source: ${data.source} · 30s previews`
-                : "30s previews",
+              data.note ||
+                (data.source ? `source: ${data.source}` : "catalog search"),
               `Enter track <n> to play (e.g. track 1 … track ${ranked.length})`,
             ]),
           ],
@@ -1117,7 +762,9 @@ export default function Terminal() {
             [
               `${track.name} — ${track.artist}`,
               `${musicStatus || (playing ? "playing" : "paused")}  ${formatTime(elapsed)} / ${formatTime(duration)}`,
-              "[30s free preview]",
+              track.isFull
+                ? "[full track · 320 kbps · streamed from /api/music/stream]"
+                : "[30s free preview]",
               track.externalUrl || "",
             ].filter(Boolean),
           ),
@@ -1247,7 +894,7 @@ export default function Terminal() {
 
       switch (name) {
         case "help": {
-          out.push(text(HELP_LINES));
+          out.push(helpEntry());
           live = "Help listed";
           break;
         }
@@ -1718,9 +1365,7 @@ export default function Terminal() {
           } else {
             out.push(
               text(
-                history.map(
-                  (h, i) => `  ${String(i + 1).padStart(3)}  ${h}`,
-                ),
+                history.map((h, i) => `  ${String(i + 1).padStart(3)}  ${h}`),
               ),
             );
           }
@@ -1739,9 +1384,21 @@ export default function Terminal() {
           return;
         }
         case "ping": {
-          out.push(text(pingLines(args[0] || "tanish.site")));
-          live = "ping";
-          break;
+          const host = args[0] || "tanish.site";
+          out.push(text(`PING ${host} — probing…`));
+          append(out, "ping");
+          setHistory((h) => [...h, raw]);
+          setHistoryIndex(-1);
+          setInput("");
+          (async () => {
+            try {
+              const lines = await pingHost(host);
+              append([text(lines)], "ping complete");
+            } catch {
+              append([text(`ping failed for ${host}`)], "ping failed");
+            }
+          })();
+          return;
         }
         case "weather": {
           append(out, "weather");
@@ -1762,7 +1419,10 @@ export default function Terminal() {
                 );
                 return;
               }
-              append([text(data.line || `weather unavailable for ${place}`)], "weather");
+              append(
+                [text(data.line || `weather unavailable for ${place}`)],
+                "weather",
+              );
             } catch {
               append(
                 [text("weather fetch failed (offline or blocked)")],
@@ -1931,12 +1591,24 @@ export default function Terminal() {
         }
         case "nmap": {
           if (!args[0]) {
-            usage("usage: nmap <host>  (try: nmap portfolio)");
+            usage("usage: nmap <host>  (try: nmap tanish.site)");
             break;
           }
-          out.push(text(simulatedNmap(args.join(" "))));
-          live = "nmap simulated";
-          break;
+          const host = args[0];
+          out.push(text(`Scanning ${host} — probing web ports…`));
+          append(out, "nmap");
+          setHistory((h) => [...h, raw]);
+          setHistoryIndex(-1);
+          setInput("");
+          (async () => {
+            try {
+              const lines = await scanHost(host);
+              append([text(lines)], "nmap complete");
+            } catch {
+              append([text(`scan failed for ${host}`)], "nmap failed");
+            }
+          })();
+          return;
         }
         case "spotify": {
           const sub = (args[0] || "").toLowerCase();
@@ -2162,6 +1834,7 @@ export default function Terminal() {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const next = defaultTerminalSize(vw, vh);
+    setUserSized(false);
     setSize(next);
     setPosition(defaultTerminalPosition(vw, vh, next.width, next.height));
     setSizeOpen(false);
@@ -2187,12 +1860,21 @@ export default function Terminal() {
     if (isMobile) return;
     e.preventDefault();
     e.stopPropagation();
+    // In auto-fit mode size.height is stale; start from the real rendered
+    // height so the drag doesn't jump, and switch to explicit sizing.
+    const startH = userSized
+      ? size.height
+      : (windowRef.current?.offsetHeight ?? size.height);
+    if (!userSized) {
+      setSize((prev) => ({ ...prev, height: startH }));
+      setUserSized(true);
+    }
     dragRef.current = {
       mode: "resize",
       pointerX: e.clientX,
       pointerY: e.clientY,
       startW: size.width,
-      startH: size.height,
+      startH,
     };
     setResizing(true);
   };
@@ -2374,6 +2056,7 @@ export default function Terminal() {
                     window.innerWidth,
                     window.innerHeight,
                   );
+                  setUserSized(true);
                   setSize(next);
                   setPosition((prev) =>
                     clampTerminalPosition(
@@ -2398,7 +2081,7 @@ export default function Terminal() {
 
         <div
           ref={scrollRef}
-          className="terminal-scroll flex-1 overflow-y-auto overflow-x-hidden px-3 py-2 text-sm sm:text-base leading-relaxed"
+          className="terminal-scroll flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-3 py-2 text-sm sm:text-base leading-relaxed"
           onClick={(e) => {
             const sel = window.getSelection()?.toString();
             if (!sel) inputRef.current?.focus();
@@ -2430,6 +2113,39 @@ export default function Terminal() {
                 }
               />
             ))}
+            {!editor && (
+              <form
+                onSubmit={onSubmit}
+                className="flex items-center gap-2 pt-0.5"
+              >
+                <label htmlFor="portfolio-terminal-input" className="sr-only">
+                  Terminal command
+                </label>
+                <span className="shrink-0 text-sm" aria-hidden="true">
+                  <span className="text-primary-200">tanish</span>
+                  <span className="text-teritiary-300"> ~ </span>
+                  <span className="text-primary-300">❯</span>
+                </span>
+                <input
+                  ref={inputRef}
+                  id="portfolio-terminal-input"
+                  type="text"
+                  value={input}
+                  onChange={(e) => {
+                    setInput(e.target.value);
+                    setTabState({ key: "", shown: false });
+                  }}
+                  onKeyDown={onKeyDown}
+                  disabled={sudoBusy}
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck={false}
+                  className="terminal-input flex-1 min-w-0 bg-transparent border-0 outline-none text-teritiary-600 text-base p-0 focus:ring-0 disabled:opacity-50"
+                  aria-label="Enter portfolio command"
+                />
+              </form>
+            )}
           </div>
           {completionMsg && (
             <div className="text-teritiary-200 text-xs mt-1">
@@ -2441,99 +2157,14 @@ export default function Terminal() {
           </div>
         </div>
 
-        {track && (
-          <div className="border-t border-secondary-600 bg-[#141210]/95 shrink-0 px-3 py-2">
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                aria-label={playing ? "Pause preview" : "Play preview"}
-                onClick={togglePreview}
-                className="min-h-11 min-w-11 rounded border border-secondary-600 text-primary-200 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-200"
-              >
-                {playing ? "❚❚" : "▶"}
-              </button>
-              {track.artwork ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={track.artwork}
-                  alt=""
-                  width={40}
-                  height={40}
-                  className="size-10 rounded object-cover border border-secondary-600"
-                />
-              ) : null}
-              <div className="min-w-0 flex-1">
-                <div className="text-xs text-teritiary-600 truncate">
-                  {track.name}{" "}
-                  <span className="text-teritiary-200">— {track.artist}</span>
-                </div>
-                <div className="h-1 mt-1 rounded bg-secondary-500 overflow-hidden">
-                  <div
-                    className="h-full bg-primary-200"
-                    style={{
-                      width: duration
-                        ? `${Math.min(100, (elapsed / duration) * 100)}%`
-                        : "0%",
-                    }}
-                  />
-                </div>
-                <div className="text-[10px] text-teritiary-200 mt-0.5 flex flex-wrap gap-x-2">
-                  <span>
-                    {musicStatus || (playing ? "playing" : "paused")}
-                    {duration
-                      ? ` · ${formatTime(elapsed)} / ${formatTime(duration)}`
-                      : ""}
-                  </span>
-                  <span>30s preview</span>
-                  {track.externalUrl && (
-                    <a
-                      href={track.externalUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary-200 underline-offset-2 hover:underline"
-                    >
-                      Open full track
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {!editor && (
-          <form
-            onSubmit={onSubmit}
-            className="flex items-center gap-2 px-3 py-2 border-t border-secondary-600 shrink-0"
-          >
-            <label htmlFor="portfolio-terminal-input" className="sr-only">
-              Terminal command
-            </label>
-            <span className="shrink-0 text-sm" aria-hidden="true">
-              <span className="text-primary-200">tanish</span>
-              <span className="text-teritiary-300"> ~ </span>
-              <span className="text-primary-300">❯</span>
-            </span>
-            <input
-              ref={inputRef}
-              id="portfolio-terminal-input"
-              type="text"
-              value={input}
-              onChange={(e) => {
-                setInput(e.target.value);
-                setTabState({ key: "", shown: false });
-              }}
-              onKeyDown={onKeyDown}
-              disabled={sudoBusy}
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              spellCheck={false}
-              className="terminal-input flex-1 min-w-0 bg-transparent border-0 outline-none text-teritiary-600 text-base p-0 focus:ring-0 disabled:opacity-50"
-              aria-label="Enter portfolio command"
-            />
-          </form>
-        )}
+        <PreviewPlayer
+          track={track}
+          playing={playing}
+          elapsed={elapsed}
+          duration={duration}
+          musicStatus={musicStatus}
+          onToggle={togglePreview}
+        />
 
         {!isMobile && (
           <div
